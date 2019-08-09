@@ -4,7 +4,7 @@
 
 As it becomes more common to use more than one monitor, it becomes more important to give Web developers the tools to make their applications perform well across multiple displays.
 
-The Screen Enumeration API gives developers access to a list of the available screens and the display properties of each screen. It is foundational for some parts of the [Window Placement API](https://github.com/spark008/window-placement) and can be used to enhance other parts.
+This proposal gives developers access to a list of the available screens and the display properties of each screen. It is foundational for some parts of the [Window Placement API proposal](https://github.com/spark008/window-placement) and can be used to enhance other parts.
 
 ## Use cases
 
