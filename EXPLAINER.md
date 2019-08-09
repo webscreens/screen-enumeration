@@ -20,16 +20,20 @@ This proposal gives developers access to a list of the available screens and the
 
 ## Proposal
 
-### Option 1: Screen enumeration
+### Option 1: Add interface to `Navigator`/`WorkerNavigator`
 
-* Scenario A: In window
-  * `Window.screens`
-* Scenario B: In service worker
-  * `ServiceWorkerGlobalScope.screens`
+Add a `ScreenManager` read-only property to `Navigator` and `WorkerNavigator`. The `ScreenManager` interface would provide functionality around requesting access to displays and their properties, listening to display connection changes, etc.
+```js
+async () => {
+  const displays = await navigator.screen.requestDisplays();
+);
+```
 
-### Option 2: Screen discovery
+### Option 2: Add `async requestDisplays()` to `Navigator`/`WorkerNavigator`
 
-`navigator.screens.requestScreens()`
+### Option 3: Add `async requestDisplays()` to `Window`/`WorkerGlobalScope`
+
+### Option 4: Add `screens` read-only property to `Window`/`WorkerGlobalScope`
 
 
 ## Privacy & Security
