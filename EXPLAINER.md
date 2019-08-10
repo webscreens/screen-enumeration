@@ -2,9 +2,9 @@
 
 ## Abstract
 
-As it becomes more common to use more than one monitor, it becomes more important to give Web developers the tools to make their applications perform well across multiple displays.
+As it becomes more common to use more than one monitor, it becomes more important to give Web developers the tools to make their applications perform well across multiple displays with differing properties.
 
-This proposal gives developers access to a list of the available screens and the display properties of each screen. It is foundational for some parts of the [Window Placement API proposal](https://github.com/spark008/window-placement) and can be used to enhance other parts.
+This proposal gives developers access to a list of the available displays and the display properties of each display. It is foundational for some parts of the [Window Placement API proposal](https://github.com/spark008/window-placement) and can be used to enhance other parts.
 
 ## Use cases
 
@@ -18,23 +18,37 @@ This proposal gives developers access to a list of the available screens and the
 
 ## Goals / Non-goals
 
-## Proposal
+## Proposals
 
-### Option 1: Add interface to `Navigator`/`WorkerNavigator`
+### **async** vs sync
+One advantage of async APIs is that they are non-blocking.
 
-Add a `ScreenManager` read-only property to `Navigator` and `WorkerNavigator`. The `ScreenManager` interface would provide functionality around requesting access to displays and their properties, listening to display connection changes, etc.
+### **`"display"`** vs `"screen"`
+At the OS level, a "display" represents a unit of rendering space (e.g. an external monitor) and the "screen" represents the singleton universe containing all the displays.
+Porting this terminology to the Web could make the API clearer. There are discrepancies between the current implementations of the `Screen` and `Window` interfaces that complicate the naming issue. On one hand, the `Screen` interface already uses the word "screen" to represent a unit of rendering space, i.e. `window.screen` returns a different object if the window is moved to a different monitor. On the other hand, the `Window` interface returns coordinates for a window relative to the entire screen space rather than relative to the display to which the window belongs, e.g. for a window positioned on the rightmost monitor of a 2-monitor setup, `window.screenX` returns a number larger than the width of the leftmost monitor.
+
+### **`navigator`** vs `Window`/`WorkerGlobalScope`
+somethin or other
+
 ```js
 async () => {
-  const displays = await navigator.screen.requestDisplays();
-);
+  // Option 1 (Ideal): Add async `requestDisplays()` to an interface implemented
+  //   by `Navigator`/`WorkerNavigator`
+  const displays1 = await navigator.screen.requestDisplays();
+
+  // Option 2: Add async `requestDisplays()` to `Navigator`/`WorkerNavigator`
+  const displays2 = await navigator.requestDisplays();
+
+  // Option 3: Add async `requestDisplays()` to `Window`/`WorkerGlobalScope`
+  const displays3 = await requestDisplays();
+
+  // Option 4: Add async `requestScreens()` to `Window`/`WorkerGlobalScope`
+  const displays4 = await requestScreens();
+}
+
+// Option 5: Add `screens` property to `Window`/`WorkerGlobalScope`
+const displays5 = screens;
 ```
-
-### Option 2: Add `async requestDisplays()` to `Navigator`/`WorkerNavigator`
-
-### Option 3: Add `async requestDisplays()` to `Window`/`WorkerGlobalScope`
-
-### Option 4: Add `screens` read-only property to `Window`/`WorkerGlobalScope`
-
 
 ## Privacy & Security
 
