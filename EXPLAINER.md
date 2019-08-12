@@ -24,8 +24,11 @@ This proposal gives developers access to a list of the available displays and th
 One advantage of async APIs is that they are non-blocking.
 
 ### **`"display"`** vs `"screen"`
-At the OS level, a "display" represents a unit of rendering space (e.g. an external monitor) and the "screen" represents the singleton universe containing all the displays.
-Porting this terminology to the Web could make the API clearer. There are discrepancies between the current implementations of the `Screen` and `Window` interfaces that complicate the naming issue. On one hand, the `Screen` interface already uses the word "screen" to represent a unit of rendering space, i.e. `window.screen` returns a different object if the window is moved to a different monitor. On the other hand, the `Window` interface returns coordinates for a window relative to the entire screen space rather than relative to the display to which the window belongs, e.g. for a window positioned on the rightmost monitor of a 2-monitor setup, `window.screenX` returns a number larger than the width of the leftmost monitor.
+In OS APIs, a "display" represents a unit of rendering space (e.g. an external monitor) and the "screen" represents the singleton universe containing all the displays. Porting this terminology to Web APIs could make the Web APIs clearer to those who are already familiar with the OS APIs. The naming issue is complicated, however, by the various interpretations of the phrase "Web-exposed screen area" and the usage of the word "screen" in the existing `Screen` and `Window` interfaces.
+
+The `Screen` interface uses the word "screen" to represent a unit of rendering space. According to the [spec](https://drafts.csswg.org/cssom-view/#web-exposed-screen-information), all screen properties return values that are relative to the area of the "output device", which in practice refers to the window's current monitor. For example, `window.screen.width` and `window.screen.height` will return different values if the window is moved between monitors with different dimensions. In addition, moving a window from the top-left corner of one monitor to the top-left corner of another monitor will not change the value of `window.screen.top` and `window.screen.left`, which are unstandardized but widely implemented. So introducing the OS terminology would require renaming "screen" to "display", and changing "screen" to refer to the sum of "displays".
+
+The `Window` interface exposes a few screen-related properties of its own, `window.screenX` and `window.screenY`. These align more closely with the OS terminology, in that they return coordinates for a window relative to the entire screen space rather than relative to the display to which the window belongs. For example, given a window positioned to the right of the primary monitor, `window.screenX` returns a number larger than the width of the primary monitor. So using the OS API terminology would require no changes to the `Window` interface implementation.
 
 ### **`navigator`** vs `Window`/`WorkerGlobalScope`
 somethin or other
@@ -34,20 +37,20 @@ somethin or other
 async () => {
   // Option 1 (Ideal): Add async `requestDisplays()` to an interface implemented
   //   by `Navigator`/`WorkerNavigator`
-  const displays1 = await navigator.screen.requestDisplays();
+  const displaysV1 = await navigator.screen.requestDisplays();
 
   // Option 2: Add async `requestDisplays()` to `Navigator`/`WorkerNavigator`
-  const displays2 = await navigator.requestDisplays();
+  const displaysV2 = await navigator.requestDisplays();
 
   // Option 3: Add async `requestDisplays()` to `Window`/`WorkerGlobalScope`
-  const displays3 = await requestDisplays();
+  const displaysV3 = await requestDisplays();
 
   // Option 4: Add async `requestScreens()` to `Window`/`WorkerGlobalScope`
-  const displays4 = await requestScreens();
+  const displaysV4 = await requestScreens();
 }
 
 // Option 5: Add `screens` property to `Window`/`WorkerGlobalScope`
-const displays5 = screens;
+const displaysV5 = screens;
 ```
 
 ## Privacy & Security
