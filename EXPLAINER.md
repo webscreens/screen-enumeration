@@ -2,14 +2,21 @@
 
 ## Abstract
 
-As it becomes more common to use more than one monitor, it becomes more important to give Web developers the tools to make their applications perform well across multiple displays with differing properties.
+As it becomes more common to use more than one monitor, it becomes more
+important to give Web developers the tools to make their applications perform
+well across multiple displays with differing properties.
 
-This proposal gives developers access to a list of the available displays and the display properties of each display. It is foundational for some parts of the [Window Placement API proposal](https://github.com/spark008/window-placement) and can be used to enhance other parts.
+This proposal gives developers access to a list of the available displays and
+the display properties of each display. It is foundational for some parts of
+the [Window Placement API
+proposal](https://github.com/spark008/window-placement) and can be used to
+enhance other parts.
 
 ## Use cases
 
 * **Slide show presentation using multiple screens**
-  * Open the presentation, speaker notes, and presenter controls on different screens in fullscreen mode.
+  * Open the presentation, speaker notes, and presenter controls on different
+    screens in fullscreen mode.
   * Move the speaker notes to a specific screen, not in fullscreen mode.
 * **Finance applications with multiple dashboards**
   * Starting the app opens all the dashboards across multiple screens.
@@ -22,15 +29,45 @@ This proposal gives developers access to a list of the available displays and th
 
 ### async vs sync
 
-One advantage of asynchronous APIs is that they are non-blocking. Given the privacy concerns with screen enumeration, it is possible that the API can only expose screens for which the user has granted permission. In this case, asynchronicity is preferable as it allows the script to continue processing any logic that does not depend on the result of the permission check, while the user interacts with the display chooser UI.
+One advantage of asynchronous APIs is that they are non-blocking. Given the
+privacy concerns with screen enumeration, it is possible that the API can
+only expose screens for which the user has granted permission. In this case,
+asynchronicity is preferable as it allows the script to continue processing
+any logic that does not depend on the result of the permission check, while
+the user interacts with the display chooser UI.
 
 ### `"display"` vs `"screen"`
 
-In OS APIs, a "display" represents a unit of rendering space (e.g. an external monitor) and the "screen" represents the singleton universe containing all the displays. Porting this terminology to Web APIs could make the Web APIs clearer to those who are already familiar with the OS APIs. The naming issue is complicated, however, by the various interpretations of the phrase "Web-exposed screen area" and the usage of the word "screen" in the existing `Screen` and `Window` interfaces.
+In OS APIs, a "display" represents a unit of rendering space (e.g. an
+external monitor) and the "screen" represents the singleton universe
+containing all the displays. Porting this terminology to Web APIs could make
+the Web APIs clearer to those who are already familiar with the OS APIs. The
+naming issue is complicated, however, by the various interpretations of the
+phrase "Web-exposed screen area" and the usage of the word "screen" in the
+existing `Screen` and `Window` interfaces.
 
-The `Screen` interface uses the word "screen" to represent a unit of rendering space. According to the [spec](https://drafts.csswg.org/cssom-view/#web-exposed-screen-information), all screen properties return values that are relative to the area of the "output device", which in practice refers to the window's current monitor. For example, `window.screen.width` and `window.screen.height` will return different values if the window is moved between monitors with different dimensions. In addition, moving a window from the top-left corner of one monitor to the top-left corner of another monitor will not change the value of `window.screen.top` and `window.screen.left`, which are unstandardized but widely implemented. So introducing the OS terminology would require renaming "screen" to "display", and changing "screen" to refer to the sum of "displays".
+The `Screen` interface uses the word "screen" to represent a unit of
+rendering space. According to the
+[spec](https://drafts.csswg.org/cssom-view/#web-exposed-screen-information),
+all screen properties return values that are relative to the area of the
+"output device", which in practice refers to the window's current monitor.
+For example, `window.screen.width` and `window.screen.height` will return
+different values if the window is moved between monitors with different
+dimensions. In addition, moving a window from the top-left corner of one
+monitor to the top-left corner of another monitor will not change the value
+of `window.screen.top` and `window.screen.left`, which are unstandardized but
+widely implemented. So introducing the OS terminology would require renaming
+"screen" to "display", and changing "screen" to refer to the sum of
+"displays".
 
-The `Window` interface exposes a few screen-related properties of its own, `window.screenX` and `window.screenY`. These align more closely with the OS terminology, in that they return coordinates for a window relative to the entire screen space rather than relative to the display to which the window belongs. For example, given a window positioned to the right of the primary monitor, `window.screenX` returns a number larger than the width of the primary monitor. So using the OS API terminology would require no changes to the `Window` interface implementation.
+The `Window` interface exposes a few screen-related properties of its own,
+`window.screenX` and `window.screenY`. These align more closely with the OS
+terminology, in that they return coordinates for a window relative to the
+entire screen space rather than relative to the display to which the window
+belongs. For example, given a window positioned to the right of the primary
+monitor, `window.screenX` returns a number larger than the width of the
+primary monitor. So using the OS API terminology would require no changes to
+the `Window` interface implementation.
 
 ### `WindowOrWorkerGlobalScope` vs `Window.navigator`/`WorkerGlobalScope.navigator`
 
@@ -74,8 +111,11 @@ async () => {
 
 ### Screen enumeration
 
-Exposing the details of a user's multi-screen setup presents a fingerprinting concern.
-In order to mitigate the amount of personally identifying information exposed, while maintaining the usefulness of the API, we can implement the following best practices:
+Exposing the details of a user's multi-screen setup presents a fingerprinting
+concern. In order to mitigate the amount of personally identifying
+information exposed, while maintaining the usefulness of the API, we can
+implement the following best practices:
+
 * return the screens by increasing `width`
 * limit the screen properties exposed to:
   * width
