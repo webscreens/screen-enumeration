@@ -54,6 +54,14 @@ async () => {
   // Examples of other APIs with a similar shape:
   //   * `Navigator.bluetooth.requestDevice()`
   const displays = await navigator.screen.requestDisplays();
+
+  for (const display in displays) {
+    console.log(display.absoluteX);
+    console.log(display.absoluteY);
+    console.log(display.resolution.x, display.resolution.y);
+    console.log(display.name);
+    console.log(display.isPrimary);
+  }
 }
 ```
 
