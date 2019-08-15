@@ -56,11 +56,10 @@ async () => {
   const displays = await navigator.screen.requestDisplays();
 
   for (const display in displays) {
-    console.log(display.absoluteX);
-    console.log(display.absoluteY);
-    console.log(display.resolution.x, display.resolution.y);
     console.log(display.name);
-    console.log(display.isPrimary);
+    console.log(display.scalingFactor);
+    console.log(display.isPrimary);  // Or return the primary screen first
+    console.log(display.isInternal);
   }
 }
 ```
@@ -85,18 +84,10 @@ phrase "Web-exposed screen area" and the usage of the word "screen" in the
 existing `Screen` and `Window` interfaces.
 
 The `Screen` interface uses the word "screen" to represent a unit of
-rendering space. According to the
-[spec](https://drafts.csswg.org/cssom-view/#web-exposed-screen-information),
-all screen properties return values that are relative to the area of the
-"output device", which in practice refers to the window's current monitor.
-For example, `window.screen.width` and `window.screen.height` will return
-different values if the window is moved between monitors with different
-dimensions. In addition, moving a window from the top-left corner of one
-monitor to the top-left corner of another monitor will not change the value
-of `window.screen.top` and `window.screen.left`, which are unstandardized but
-widely implemented. So introducing the OS terminology would require renaming
-"screen" to "display", and changing "screen" to refer to the sum of
-"displays".
+rendering space. The `width` and `height` properties return values that are
+relative to the area of the "output device", which in practice refers to the
+window's current monitor. The unstandardized `top` and `left` properties,
+however, return values that are relative to the entire screen space.
 
 The `Window` interface exposes a few screen-related properties of its own,
 `window.screenX` and `window.screenY`. These align more closely with the OS
