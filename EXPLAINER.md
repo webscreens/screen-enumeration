@@ -15,15 +15,29 @@ enhance other parts.
 ## Use cases
 
 * **Slide show presentation using multiple screens**
-  * Open the presentation, speaker notes, and presenter controls on different
-    screens in fullscreen mode.
-  * Move the speaker notes to a specific screen, not in fullscreen mode.
+  * Open the presentation, speaker notes, and presenter controls on the most
+    appropriate screen for each window.
+  * Move the speaker notes to a specific screen.
 * **Finance applications with multiple dashboards**
   * Starting the app opens all the dashboards across multiple screens.
 * **Video player that optimizes video specs/quality for each screen**
-  * Video is optimized for the screen on which it is rendered.
+  * Video format is optimized for the screen on which it is rendered.
 
-## Goals / Non-goals
+## Goals
+
+### Current goals
+
+* Enable access to available displays on both `window` and service worker scopes
+* Expose a subset of display properties needed to route content to the most
+  suitable display
+
+### Future goals
+
+* Enable access to Chromecast displays
+
+### Non-goals
+
+* Expose an exhaustive set of display properties known to the OS
 
 ## Proposal
 
