@@ -27,7 +27,7 @@ enhance other parts.
 
 ### Current goals
 
-* Enable access to available displays on both `window` and service worker scopes
+* Enable access to available displays on both `window` and service worker execution contexts
 * Expose a subset of display properties needed to route content to the most
   suitable display
 
