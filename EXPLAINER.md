@@ -155,15 +155,24 @@ async () => {
 
 ## Privacy & Security
 
-### Screen enumeration
-
 Exposing the details of a user's multi-screen setup presents a fingerprinting
 concern. In order to mitigate the amount of personally identifying
-information exposed, while maintaining the usefulness of the API, we can
-implement the following best practices:
+information exposed, while maintaining the usefulness of the API, we can return
+the screens ordered by a non-OS-differentiating property, like increasing
+`width`.
 
-* return the screens by increasing `width`
-* limit the screen properties exposed to:
-  * width
-  * height
-* limit the API to secure contexts
+To reduce the chance that the user's screen data gets compromised, we can also
+limit the API to secure contexts.
+
+In addition, we can limit the set of screen properties we expose to the bare
+minimum needed to support our use cases.
+
+* New properties needed to determine which display is the most appropriate for
+  a given type of content:
+  * absolute coordinates in entire screen space (already accessible via
+    `screenX`/`screenY` on `window`)
+  * resolution
+  * primary vs secondary display
+* New properties needed in a UI for the user to select on which display content
+  should appear:
+  * display name
