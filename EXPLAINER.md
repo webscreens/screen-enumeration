@@ -25,9 +25,25 @@ enhance other parts.
 
 ## Goals / Non-goals
 
-## Proposals
+## Proposal
 
-### async vs sync
+The leading option proposed here is to have `Navigator` and `WorkerNavigator`
+implement a `NavigatorScreen` interface that has an asynchronous method for
+getting the list of `Screen` objects to which the user has granted access.
+Additionally, we propose adding a number of properties to the `Screen` interface
+that will be essential to empowering the APIs that will consume this API.
+
+```js
+async () => {
+  // Async method on interface implemented by `Navigator`/`WorkerNavigator`
+  //
+  // Examples of other APIs with a similar shape:
+  //   * `Navigator.bluetooth.requestDevice()`
+  const displays = await navigator.screen.requestDisplays();
+}
+```
+
+### **Synchronicity**: async vs sync
 
 One advantage of asynchronous APIs is that they are non-blocking. Given the
 privacy concerns with screen enumeration, it is possible that the API can
@@ -36,7 +52,7 @@ asynchronicity is preferable as it allows the script to continue processing
 any logic that does not depend on the result of the permission check, while
 the user interacts with the display chooser UI.
 
-### `"display"` vs `"screen"`
+### **Naming**: `"display"` vs `"screen"`
 
 In OS APIs, a "display" represents a unit of rendering space (e.g. an
 external monitor) and the "screen" represents the singleton universe
@@ -69,20 +85,30 @@ monitor, `window.screenX` returns a number larger than the width of the
 primary monitor. So using the OS API terminology would require no changes to
 the `Window` interface implementation.
 
-### `WindowOrWorkerGlobalScope` vs `Window.navigator`/`WorkerGlobalScope.navigator`
+### **Scope**: `WindowOrWorkerGlobalScope` vs `Navigator`/`WorkerNavigator`
 
-somethin or other
+If we take inspiration from existing APIs with a similar shape, there are a
+couple of places where the API could live.
+
+1. The global scope, `Window`, is appealing as those familiar with the
+`window.screen` API might anticipate finding multi-screen functionality in a
+corresponding `window.screens` API. The `window` object currently contains a
+sprawling mishmash of unrelated APIs, however, so tacking on additional
+weight may contribute to the disorganization. In order to support the API in
+service workers, `WorkerGlobalScope` would additionally need to implement the
+API, so we'd likely add the API to the `WindowOrWorkerGlobalScope` mixin, which
+is exposed on both `Window` and `WorkerGlobalScope` objects.
+
+1. The `navigator` object nested beneath the global scope is an alternative that
+would tuck the API into a less chaotic wing of the global scope. In order to
+support the API in service workers, `WorkerNavigator` would additionally need to
+implement the API.
+
+## Alternative proposals
 
 ```js
 async () => {
-  // Option 1 (Ideal): Add async `requestDisplays()` to an interface implemented
-  //   by `Navigator`/`WorkerNavigator`
-  //
-  // Examples of other APIs with a similar shape:
-  //   * `Navigator.bluetooth.requestDevice()`
-  const displaysV1 = await navigator.screen.requestDisplays();
-
-  // Option 2: Add async `requestDisplays()` to an interface implemented by
+  // Option 1: Add async `requestDisplays()` to an interface implemented by
   //   `WindowOrWorkerGlobalScope`
   //
   // Examples of other APIs with a similar shape:
@@ -91,19 +117,25 @@ async () => {
   //
   // Note: The interface cannot be bound to a property named `screen` as the
   //   `window.screen` property already exists.
-  const displaysV2 = await self.screens.requestDisplays();
+  const displaysV1 = await self.screens.requestDisplays();
 
   // Option 2: Add async `requestDisplays()` to `Navigator`/`WorkerNavigator`
-  const displaysV3 = await navigator.requestDisplays();
+  //
+  // Examples of other APIs with a similar shape:
+  //   * `Navigator.getVRDisplays()`
+  const displaysV2 = await navigator.requestDisplays();
 
   // Option 3: Add async `requestDisplays()` to `WindowOrWorkerGlobalScope`
-  const displaysV4 = await self.requestDisplays();
+  const displaysV3 = await self.requestDisplays();
 
   // Option 4: Add async `requestScreens()` to `WindowOrWorkerGlobalScope`
-  const displaysV5 = await self.requestScreens();
+  const displaysV4 = await self.requestScreens();
 
   // Option 5: Add `screens` property to `WindowOrWorkerGlobalScope`
-  const displaysV6 = self.screens;
+  //
+  // Examples of other APIs with a similar shape:
+  //   * `Window.screen`
+  const displaysV5 = self.screens;
 }
 ```
 
