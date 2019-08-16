@@ -84,6 +84,8 @@ properties of the current screen without getting the user's permission.
 
 ### **Naming**: `"display"` vs `"screen"`
 
+TODO: Revise this section.
+
 In OS APIs, a "display" represents a unit of rendering space (e.g. an
 external monitor) and the "screen" represents the singleton universe
 containing all the displays. Porting this terminology to Web APIs could make
@@ -91,6 +93,9 @@ the Web APIs clearer to those who are already familiar with the OS APIs. The
 naming issue is complicated, however, by the various interpretations of the
 phrase "Web-exposed screen area" and the usage of the word "screen" in the
 existing `Screen` and `Window` interfaces.
+
+The Android API also uses the word "display" to reference a unit of rendering
+space.
 
 The `Screen` interface uses the word "screen" to represent a unit of
 rendering space. The `width` and `height` properties return values that are
