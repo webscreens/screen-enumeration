@@ -27,7 +27,8 @@ enhance other parts.
 
 ### Current goals
 
-* Enable access to available displays on both `window` and service worker execution contexts
+* Enable access to available displays on both `Window` and service worker
+  execution contexts
 * Expose a subset of display properties needed to route content to the most
   suitable display
 
@@ -72,6 +73,14 @@ only expose screens for which the user has granted permission. In this case,
 asynchronicity is preferable as it allows the script to continue processing
 any logic that does not depend on the result of the permission check, while
 the user interacts with the display chooser UI.
+
+### **Container class**: `Screen` vs `Display`
+
+Some screen properties can already be found in the `Screen` interface, which is
+synchronously accessible via `window.screen`. Extending this interface to
+include the newly proposed properties reduces the complexity of screen-related
+APIs as a whole, but poses a potential privacy concern by exposing all the
+properties of the current screen without getting the user's permission.
 
 ### **Naming**: `"display"` vs `"screen"`
 
@@ -179,3 +188,7 @@ To ensure that the user is aware of the data they are sharing and has control
 over which displays the Web application can access, we propose implementing a
 permission prompt. Calling `requestDisplays()` would prompt the user to select
 which displays to share with the application.
+
+A consequence of reusing the `Screen` interface to expose the properties listed
+above is that the properties of the window's current screen are exposed without
+getting the user's permission.
