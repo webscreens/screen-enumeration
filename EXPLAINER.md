@@ -163,15 +163,19 @@ the screens ordered by a non-OS-differentiating property, like increasing
 To reduce the chance that the user's screen data gets compromised, we can also
 limit the API to secure contexts.
 
-In addition, we can limit the set of screen properties we expose to the bare
-minimum needed to support our use cases.
+To minimize the fingerprintable space, we can limit the set of screen
+properties we expose to the bare minimum needed to support our use cases.
 
-* New properties needed to determine which display is the most appropriate for
-  a given type of content:
-  * absolute coordinates in entire screen space (already accessible via
-    `screenX`/`screenY` on `window`)
-  * resolution
-  * primary vs secondary display
 * New properties needed in a UI for the user to select on which display content
   should appear:
   * display name
+* New properties needed to determine which display is the most appropriate for
+  a given type of content:
+  * resolution or scale factor
+  * primary vs secondary display
+  * built-in vs external display
+
+To ensure that the user is aware of the data they are sharing and has control
+over which displays the Web application can access, we propose implementing a
+permission prompt. Calling `requestDisplays()` would prompt the user to select
+which displays to share with the application.
