@@ -39,28 +39,51 @@ enhance other parts.
 ### Non-goals
 
 * Expose an exhaustive set of display properties known to the OS
+* Support screen change events (e.g. when a display is added/removed)
 
 ## Proposal
 
-The leading option proposed here is to have `Navigator` and `WorkerNavigator`
-implement a `NavigatorScreen` interface that has an asynchronous method for
-getting the list of `Screen` objects to which the user has granted access.
-Additionally, we propose adding a number of properties to the `Screen` interface
-that will be essential to empowering the APIs that will consume this API.
+The leading option proposed here is to introduce a `ScreenManager` interface
+that has an asynchronous `requestDisplays()` method gated behind a permission
+prompt. If the user grants access to the displays connected to the device,
+the method resolves to an array of `Display` objects, and rejects otherwise.
+The `Display` object should contain a subset of the properties already
+exposed in the `Screen` interface, as well as other properties needed to
+support window placement features outlined in the [Window Placement API
+explainer](https://github.com/spark008/window-placement/blob/master/EXPLAINER.md).
+The interface should be implemented by both the `Navigator` and
+`WorkerNavigator` interfaces, so that the API is exposed on both `Window` and
+`ServiceWorker` execution contexts.
 
 ```js
 async () => {
-  // Async method on interface implemented by `Navigator`/`WorkerNavigator`
+  // Get the displays connected to the device.
+  //
+  // Returns an Array of Display objects.
   //
   // Examples of other APIs with a similar shape:
   //   * `Navigator.bluetooth.requestDevice()`
   const displays = await navigator.screen.requestDisplays();
 
   for (const display in displays) {
-    console.log(display.name);
-    console.log(display.scalingFactor);
-    console.log(display.isPrimary);  // Or return the primary screen first
-    console.log(display.isInternal);
+    // Properties currently exposed in the Screen interface.
+    console.log(display.colorDepth);     // 24
+    console.log(display.width);          // 1680
+    console.log(display.height);         // 1050
+    console.log(display.availWidth);     // 1680
+    console.log(display.availHeight);    // 1027
+
+    // Properties in the Screen interface, but unstandardized.
+    console.log(display.top);            // 0
+    console.log(display.left);           // -1680
+    console.log(display.availTop);       // 23
+    console.log(display.availLeft);      // 0
+
+    // Properties currently not Web-exposed.
+    console.log(display.name);           // "DELL P2715Q"
+    console.log(display.scalingFactor);  // 2
+    console.log(display.isPrimary);      // true
+    console.log(display.isInternal);     // true
   }
 }
 ```
