@@ -73,15 +73,17 @@ async () => {
     console.log(display.availWidth);     // 1680
     console.log(display.availHeight);    // 1027
 
-    // Properties in the Screen interface, but unstandardized.
-    console.log(display.top);            // 0
+    // Unstandardized properties in the Screen interface.
     console.log(display.left);           // -1680
-    console.log(display.availTop);       // 23
+    console.log(display.top);            // 0
     console.log(display.availLeft);      // 0
+    console.log(display.availTop);       // 23
 
-    // Properties currently not Web-exposed.
-    console.log(display.name);           // "DELL P2715Q"
+    // Properties currently exposed in the Window interface.
     console.log(display.scalingFactor);  // 2
+
+    // New properties currently not Web-exposed.
+    console.log(display.name);           // "DELL P2715Q"
     console.log(display.isPrimary);      // true
     console.log(display.isInternal);     // true
   }
@@ -153,6 +155,29 @@ is exposed on both `Window` and `WorkerGlobalScope` objects.
 would tuck the API into a less chaotic wing of the global scope. In order to
 support the API in service workers, `WorkerNavigator` would additionally need to
 implement the API.
+
+## New Display Properties
+
+Coordinates are defined in the screen coordinate system, i.e. the origin is at
+the top-left corner of the primary display.
+
+* **`Display.left`**: X-coordinate of this display's left edge.
+  * Already exposed via `Window.screenLeft` and `Window.screenX`.
+* **`Display.top`**: Y-coordinate of this display's top edge.
+  * Already exposed via `Window.screenTop` and `Window.screenY`.
+* **`Display.availLeft`**: Leftmost x-coordinate of this display that the window
+may occupy.
+  * Already exposed via `Screen.availLeft`.
+* **`Display.availTop`**: Topmost y-coordinate of this display that the window
+may occupy.
+  * Already exposed via `Screen.availTop`.
+* **`Display.name`**: A human-readable name that uniquely identifies this
+display.
+* **`Display.scalingFactor`**: The number of hardware pixels per CSS pixel.
+  * Already exposed via `Window.devicePixelRatio`.
+* **`Display.isPrimary`**: Whether this display is the primary display.
+* **`Display.isInternal`**: Whether this display is internal (built-in) or
+external.
 
 ## Alternative proposals
 
