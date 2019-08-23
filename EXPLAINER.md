@@ -80,6 +80,7 @@ async () => {
     console.log(display.availTop);       // 23
 
     // Properties currently exposed in the Window interface.
+    // Exposed as Window.devicePixelRatio.
     console.log(display.scalingFactor);  // 2
 
     // New properties currently not Web-exposed.
@@ -90,52 +91,39 @@ async () => {
 }
 ```
 
-### **Synchronicity**: async vs sync
+### **Synchronicity**
 
 One advantage of asynchronous APIs is that they are non-blocking. Given the
 privacy concerns with screen enumeration, it is possible that the API can
-only expose screens for which the user has granted permission. In this case,
+only expose screens if the user has granted permission. In this case,
 asynchronicity is preferable as it allows the script to continue processing
 any logic that does not depend on the result of the permission check, while
 the user interacts with the display chooser UI.
 
-### **Container class**: `Screen` vs `Display`
+### **Container class**: `Display` (new) vs `Screen` (existing)
 
-Some screen properties can already be found in the `Screen` interface, which is
-synchronously accessible via `window.screen`. Extending this interface to
-include the newly proposed properties reduces the complexity of screen-related
-APIs as a whole, but poses a potential privacy concern by exposing all the
-properties of the current screen without getting the user's permission.
+Some of the desired display properties already exist in the `Screen`
+interface. Although extending this interface to include the remaining properties
+reduces the surface area of screen-related APIs, it poses a potential privacy
+concern since the properties of the window's current screen would be exposed
+without the user's permission via the existing synchronous `window.screen`
+API. Thus, the preferred option is to create a new `Display` object, which
+duplicates some properties but ensures that privacy-sensitive properties will
+always be exposed asynchronously after checking for the user's permission.
 
-### **Naming**: `"display"` vs `"screen"`
+### **Nomenclature and the Coordinate System**
 
-TODO: Revise this section.
+This proposal uses the following multi-monitor terminology found in other
+systems:
 
-In OS APIs, a "display" represents a unit of rendering space (e.g. an
-external monitor) and the "screen" represents the singleton universe
-containing all the displays. Porting this terminology to Web APIs could make
-the Web APIs clearer to those who are already familiar with the OS APIs. The
-naming issue is complicated, however, by the various interpretations of the
-phrase "Web-exposed screen area" and the usage of the word "screen" in the
-existing `Screen` and `Window` interfaces.
+**Display**: A unit of rendering space, e.g. an external monitor.
 
-The Android API also uses the word "display" to reference a unit of rendering
-space.
+**Screen**: The aggregate 2D space occupied by all the connected displays.
 
-The `Screen` interface uses the word "screen" to represent a unit of
-rendering space. The `width` and `height` properties return values that are
-relative to the area of the "output device", which in practice refers to the
-window's current monitor. The unstandardized `top` and `left` properties,
-however, return values that are relative to the entire screen space.
-
-The `Window` interface exposes a few screen-related properties of its own,
-`window.screenX` and `window.screenY`. These align more closely with the OS
-terminology, in that they return coordinates for a window relative to the
-entire screen space rather than relative to the display to which the window
-belongs. For example, given a window positioned to the right of the primary
-monitor, `window.screenX` returns a number larger than the width of the
-primary monitor. So using the OS API terminology would require no changes to
-the `Window` interface implementation.
+The top-left corner of the primary display defines the origin of the coordinate
+system used to position each display. The existing screen-related Web APIs
+already implement this layout, but do not use language that clearly defines
+multi-monitor expectations.
 
 ### **Scope**: `WindowOrWorkerGlobalScope` vs `Navigator`/`WorkerNavigator`
 
@@ -147,9 +135,9 @@ couple of places where the API could live.
 corresponding `window.screens` API. The `window` object currently contains a
 sprawling mishmash of unrelated APIs, however, so tacking on additional
 weight may contribute to the disorganization. In order to support the API in
-service workers, `WorkerGlobalScope` would additionally need to implement the
-API, so we'd likely add the API to the `WindowOrWorkerGlobalScope` mixin, which
-is exposed on both `Window` and `WorkerGlobalScope` objects.
+service workers, we'd define the API in the `WindowOrWorkerGlobalScope`
+mixin, which is implemented by both the `Window` and `WorkerGlobalScope`
+interfaces.
 
 1. The `navigator` object nested beneath the global scope is an alternative that
 would tuck the API into a less chaotic wing of the global scope. In order to
