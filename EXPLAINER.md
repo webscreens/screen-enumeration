@@ -113,8 +113,8 @@ always be exposed asynchronously after checking for the user's permission.
 
 ### **Nomenclature and the Coordinate System**
 
-This proposal uses the following multi-monitor terminology found in other
-systems:
+This proposal uses the following multi-monitor terminology found in other APIs
+(e.g. in desktop and mobile operating systems):
 
 **Display**: A unit of rendering space, e.g. an external monitor.
 
@@ -127,7 +127,7 @@ multi-monitor expectations.
 
 ### **Scope**: `WindowOrWorkerGlobalScope` vs `Navigator`/`WorkerNavigator`
 
-If we take inspiration from existing APIs with a similar shape, there are a
+If we take inspiration from existing similarly shaped Web APIs, there are a
 couple of places where the API could live.
 
 1. The global scope, `Window`, is appealing as those familiar with the
@@ -230,6 +230,3 @@ over which displays the Web application can access, we propose implementing a
 permission prompt. Calling `requestDisplays()` would prompt the user to select
 which displays to share with the application.
 
-A consequence of reusing the `Screen` interface to expose the properties listed
-above is that the properties of the window's current screen are exposed without
-getting the user's permission.
