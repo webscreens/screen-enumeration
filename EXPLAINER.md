@@ -67,26 +67,27 @@ async () => {
 
   for (const display in displays) {
     // Properties currently exposed in the Screen interface.
-    console.log(display.colorDepth);     // 24
-    console.log(display.width);          // 1680
-    console.log(display.height);         // 1050
-    console.log(display.availWidth);     // 1680
-    console.log(display.availHeight);    // 1027
+    console.log(display.colorDepth);        // 24
+    console.log(display.width);             // 1680
+    console.log(display.height);            // 1050
+    console.log(display.availWidth);        // 1680
+    console.log(display.availHeight);       // 1027
+    console.log(display.orientation.type);  // "landscape-primary"
 
     // Unstandardized properties in the Screen interface.
-    console.log(display.left);           // -1680
-    console.log(display.top);            // 0
-    console.log(display.availLeft);      // 0
-    console.log(display.availTop);       // 23
+    console.log(display.left);              // -1680
+    console.log(display.top);               // 0
+    console.log(display.availLeft);         // 0
+    console.log(display.availTop);          // 23
 
     // Properties currently exposed in the Window interface.
     // Exposed as Window.devicePixelRatio.
-    console.log(display.scalingFactor);  // 2
+    console.log(display.scalingFactor);     // 2
 
     // New properties currently not Web-exposed.
-    console.log(display.name);           // "DELL P2715Q"
-    console.log(display.isPrimary);      // true
-    console.log(display.isInternal);     // true
+    console.log(display.name);              // "DELL P2715Q"
+    console.log(display.isPrimary);         // true
+    console.log(display.isInternal);        // true
   }
 }
 ```
