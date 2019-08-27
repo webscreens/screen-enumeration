@@ -35,6 +35,15 @@ display to render a piece of content.
 
 ## 2.2 Is this specification exposing the minimum amount of information necessary to power the feature?
 
+By building the display chooser UI into the browser, the API could potentially
+expose a (non-human readable) hash value to identify each display rather than
+the display's proper name. This alternative, however, reduces the ability for
+applications to tailor the chooser UI to each of their use cases.
+
+Each of the remaining new display properties reveals a non-overlapping insight
+about the screen configuration that could have a major impact on how well the
+application is able to predict the optimal content layout.
+
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
 ## 2.4 How does this specification deal with sensitive information?
