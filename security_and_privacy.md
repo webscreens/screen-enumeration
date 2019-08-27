@@ -46,13 +46,28 @@ application is able to predict the optimal content layout.
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
+Access to display properties will be gated behind a permission prompt built into
+the browser.
+
 ## 2.4 How does this specification deal with sensitive information?
+
+Access to display properties will be gated behind a permission prompt built into
+the browser.
 
 ## 2.5 Does this specification introduce new state for an origin that persists across browsing sessions?
 
+The browser could persist whether the user granted screen permission to the
+origin.
+
 ## 2.6 What information from the underlying platform, e.g. configuration data, is exposed by this specification to an origin?
 
+The display name usually exposes the make/model of the connected displays. The
+resolution and available width/height may indirectly expose the operating
+system and device make/model.
+
 ## 2.7 Does this specification allow an origin access to sensors on a user’s device
+
+No.
 
 ## 2.8 What data does this specification expose to an origin? Please also document what data is identical to data exposed by other features, in the same or different contexts.
 
