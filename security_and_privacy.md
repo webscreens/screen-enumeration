@@ -6,6 +6,33 @@ Questionnaire](https://www.w3.org/TR/security-privacy-questionnaire).
 
 ## 2.1 What information might this feature expose to Web sites or other parties, and for what purposes is that exposure necessary?
 
+This API exposes a set of properties for each of the displays connected to the
+user's device. Currently, an application window can access a subset of these
+properties, but only for the display it occupies. Having access to a display's
+properties without having to place a window in it allows the application to
+predict which display is most appropriate for each piece of Web content and
+automatically arrange its windows in the optimal layout. For example, a slide
+show presentation application could automatically allocate the presentation to
+the largest external display, the speaker notes to the next largest display, and
+the presentation controls to the built-in display when the user clicks the
+"Present" button.
+
+The following are new display properties that would help the application better
+predict the optimal content layout given the available screen space:
+* resolution, or scale factor
+  * E.g. given 2 screens of the same size, render the presentation on the screen
+  with the better resolution
+* whether it is the primary display
+  * E.g. render the speaker notes on the primary display and the presentation on
+  another display
+* whether it is internal (built-in) or external
+  * E.g. render the speaker notes on the built-in display and the presentation
+  on the external display
+
+The remaining new display property is the display name. The name would allow the
+user to recognize their displays in a display chooser UI for selecting in which
+display to render a piece of content.
+
 ## 2.2 Is this specification exposing the minimum amount of information necessary to power the feature?
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
