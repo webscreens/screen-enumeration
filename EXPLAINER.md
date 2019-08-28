@@ -13,14 +13,14 @@ and can be used to enhance other parts.
 
 ## Use cases
 
-* **Slide show presentation using multiple screens**
+* **Slide show presentation using multiple monitors**
   * Open the presentation, speaker notes, and presenter controls on the most
-    appropriate screen for each window.
-  * Move the speaker notes to a specific screen.
+    appropriate monitor for each window.
+  * Move the speaker notes to a specific monitor.
 * **Finance applications with multiple dashboards**
-  * Starting the app opens all the dashboards across multiple screens.
-* **Video player that optimizes video specs/quality for each screen**
-  * Video format is optimized for the screen on which it is rendered.
+  * Starting the app opens all the dashboards across multiple monitors.
+* **Video player that optimizes video specs/quality for each monitor**
+  * Video format is optimized for the monitor on which it is rendered.
 
 ## Goals
 
@@ -95,19 +95,19 @@ async () => {
 
 One advantage of asynchronous APIs is that they are non-blocking. Given the
 privacy concerns with screen enumeration, it is possible that the API can only
-expose screens if the user has granted permission. In this case, asynchronicity
-is preferable as it allows the script to continue processing any logic that does
-not depend on the result of the permission check, while the user interacts with
-the display chooser UI.
+expose screen information if the user has granted permission. In this case,
+asynchronicity is preferable as it allows the script to continue processing any
+logic that does not depend on the result of the permission check, while the user
+interacts with the display chooser UI.
 
 ### **Container class**: `Display` (new) vs `Screen` (existing)
 
 Some of the desired display properties already exist in the `Screen` interface.
 Although extending this interface to include the remaining properties reduces
 the surface area of screen-related APIs, it poses a potential privacy concern
-since the properties of the window's current screen would be exposed without the
-user's permission via the existing synchronous `window.screen` API. Thus, the
-preferred option is to create a new `Display` object, which duplicates some
+since the properties of the window's current display would be exposed without
+the user's permission via the existing synchronous `window.screen` API. Thus,
+the preferred option is to create a new `Display` object, which duplicates some
 properties but ensures that privacy-sensitive properties will always be exposed
 asynchronously after checking for the user's permission.
 
@@ -131,7 +131,7 @@ If we take inspiration from existing similarly shaped Web APIs, there are a
 couple of places where the API could live.
 
 1. The global scope, `Window`, is appealing as those familiar with the
-`window.screen` API might anticipate finding multi-screen functionality in a
+`window.screen` API might anticipate finding multi-display functionality in a
 corresponding `window.screens` API. The `window` object currently contains a
 sprawling mishmash of unrelated APIs, however, so tacking on additional weight
 may contribute to the disorganization. In order to support the API in service
@@ -203,16 +203,16 @@ async () => {
 
 ## Privacy & Security
 
-Exposing the details of a user's multi-screen setup presents a fingerprinting
+Exposing the details of a user's multi-monitor setup presents a fingerprinting
 concern. In order to mitigate the amount of personally identifying information
-exposed, while maintaining the usefulness of the API, we can return the screens
+exposed, while maintaining the usefulness of the API, we can return the displays
 ordered by a non-OS-differentiating property, like increasing `width`.
 
 To reduce the chance that the user's screen data gets compromised, we can also
 limit the API to secure contexts.
 
-To minimize the fingerprintable space, we can limit the set of screen properties
-we expose to the bare minimum needed to support our use cases.
+To minimize the fingerprintable space, we can limit the set of display
+properties we expose to the bare minimum needed to support our use cases.
 
 * New properties needed in a UI for the user to select on which display content
   should appear:
