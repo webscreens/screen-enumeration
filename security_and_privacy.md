@@ -151,11 +151,24 @@ given the `"system.display"` permission:
 
 ## 2.9 Does this specification enable new script execution/loading mechanisms?
 
+No.
+
 ## 2.10 Does this specification allow an origin to access other devices?
+
+No, but if multiple devices are connected to the same set of displays, an
+attacker may use the display information to infer that those devices are in the
+same physical vicinity.
 
 ## 2.11 Does this specification allow an origin some measure of control over a user agent’s native UI?
 
-## 2.12 What temporary identifiers might this this specification create or expose to the web?
+On its own, it does not. In conjunction with the proposed
+[Window Placement API](https://github.com/spark008/window-placement/blob/master/EXPLAINER.md),
+this API could enable use cases that require opening a window in fullscreen mode
+on a display that does not contain a window with that origin at the time.
+
+## 2.12 What temporary identifiers might this specification create or expose to the web?
+
+None.
 
 ## 2.13 How does this specification distinguish between behavior in first-party and third-party contexts?
 
