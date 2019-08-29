@@ -61,15 +61,93 @@ origin.
 
 ## 2.6 What information from the underlying platform, e.g. configuration data, is exposed by this specification to an origin?
 
-The display name usually exposes the make/model of the connected displays. The
-resolution and available width/height may indirectly expose the operating
-system and device make/model.
+This API proposes exposing the following properties for each of the displays
+(physical or virtual) connected to the device:
+* color depth
+* width and height of the entire display
+* width and height of the part of the display that the window may occupy (i.e.
+excludes space occupied by system UI)
+  * NOTE: The available width/height may indirectly expose the operating system.
+* orientation
+* smallest x-,y-coordinates of this display (relative to entire screen space)
+  * NOTE: The overall layout of a multi-monitor setup can be deduced by mapping
+  out each display by its coordinates in the screen space.
+* smallest x-,y-coordinates of this display that the window may occupy (relative
+to entire screen space)
+* scaling factor
+* name
+  * NOTE: The default display name usually exposes the display's make/model.
+* whether the display is the primary display
+* whether the display is internal (built-in) or external
 
 ## 2.7 Does this specification allow an origin access to sensors on a user’s device
 
 No.
 
 ## 2.8 What data does this specification expose to an origin? Please also document what data is identical to data exposed by other features, in the same or different contexts.
+
+The display properties in this API proposal that already exist through other Web
+APIs are currently exposed:
+* synchronously
+* in only the document/frame execution context
+* for the display containing the window
+
+This API proposes exposing these existing properties and new ones:
+* asynchronously
+* in both the document/frame and worker execution contexts
+* for all displays, not just the one containing the window
+
+### Existing properties
+
+The following display properties are currently exposed synchronously only in the
+document/frame execution context via the `Screen` interface:
+* color depth, i.e.
+[`Screen.colorDepth`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/colorDepth)
+* width and height of the entire display, i.e.
+[`Screen.width`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/width),
+[`Screen.height`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/height)
+* width and height of the part of the display that the window may occupy (i.e. excludes
+space occupied by system UI), i.e.
+[`Screen.availWidth`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availWidth),
+[`Screen.availHeight`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availHeight)
+* orientation, i.e.
+[`Screen.orientation`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/orientation)
+
+The following display properties are currently unstandardized properties of the
+`Screen` interface, and thus may be exposed synchronously in the document/frame
+execution context for some browsers:
+* smallest x-,y-coordinates of this display that the window may occupy (relative
+to entire screen space), i.e.
+[`Screen.availLeft`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availLeft),
+[`Screen.availTop`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availTop)
+
+The following are also unstandardized properties of the `Screen` interface, but
+are also exposed synchronously in the document/frame execution context via the
+`Window` interface:
+* smallest x-,y-coordinates of this display (relative to entire screen space),
+i.e.
+[`Screen.left`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/left)
+or
+[`Window.screenLeft`](https://developer.mozilla.org/en-US/docs/Web/API/Window/screenLeft),
+and
+[`Screen.top`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/top) or
+[`Window.screenTop`](https://developer.mozilla.org/en-US/docs/Web/API/Window/screenTop)
+
+The following display property is currently exposed synchronously in the
+document/frame execution context via the `Window` interface.
+* scaling factor, i.e.
+[`Window.devicePixelRatio`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio)
+
+### New properties
+
+The following display properties are not currently Web-exposed, but are
+available in the Chrome Apps API via the
+[`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo),
+given the `"system.display"` permission:
+* name
+* whether the display is the primary display
+* whether the display is internal (built-in) or external
+
 
 ## 2.9 Does this specification enable new script execution/loading mechanisms?
 
