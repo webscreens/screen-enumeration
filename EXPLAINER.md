@@ -85,8 +85,8 @@ async () => {
 
     // New properties currently not Web-exposed.
     console.log(display.name);              // "DELL P2715Q"
-    console.log(display.isPrimary);         // true
-    console.log(display.isInternal);        // true
+    console.log(display.primary);           // true
+    console.log(display.internal);          // true
   }
 }
 ```
@@ -162,8 +162,8 @@ may occupy.
 display.
 * **`Display.scalingFactor`**: The number of hardware pixels per CSS pixel.
   * Already exposed via `Window.devicePixelRatio`.
-* **`Display.isPrimary`**: Whether this display is the primary display.
-* **`Display.isInternal`**: Whether this display is internal (built-in) or
+* **`Display.primary`**: Whether this display is the primary display.
+* **`Display.internal`**: Whether this display is internal (built-in) or
 external.
 
 ## Alternative proposals
