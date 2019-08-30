@@ -14,7 +14,7 @@ predict which display is most appropriate for each piece of Web content and
 automatically arrange its windows in the optimal layout. For example, a slide
 show presentation application could automatically allocate the presentation to
 the largest external display, the speaker notes to the next largest display, and
-the presentation controls to the built-in display when the user clicks the
+the presentation controls to the built-in display when the user clicks a
 "Present" button.
 
 The following are new display properties that would help the application better
@@ -24,7 +24,7 @@ predict the optimal content layout given the available screen space:
   with the better resolution
 * whether it is the primary display
   * E.g. render the speaker notes on the primary display and the presentation on
-  another display
+  a secondary display
 * whether it is internal (built-in) or external
   * E.g. render the speaker notes on the built-in display and the presentation
   on the external display
@@ -35,14 +35,14 @@ display to render a piece of content.
 
 ## 2.2 Is this specification exposing the minimum amount of information necessary to power the feature?
 
-By building the display chooser UI into the browser, the API could potentially
-expose a (non-human readable) hash value to identify each display rather than
-the display's proper name. This alternative, however, reduces the ability for
-applications to tailor the chooser UI to each of their use cases.
+Each of the new display properties chosen for this API makes a non-replaceable
+contribution. Removal or constraining of any property would degrade the user
+experience.
 
-Each of the remaining new display properties reveals a non-overlapping insight
-about the screen configuration that could have a major impact on how well the
-application is able to predict the optimal content layout.
+For example, the API could expose a display's identity to the end user by its
+proper name in a display chooser UI implemented by the user agent, and to
+scripts by a hash value or number. This alternative, however, reduces the
+ability for applications to tailor the chooser UI to each of their use cases.
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
@@ -52,12 +52,11 @@ the browser.
 ## 2.4 How does this specification deal with sensitive information?
 
 Access to display properties will be gated behind a permission prompt built into
-the browser.
+the browser. The API will also be restricted to secure contexts.
 
 ## 2.5 Does this specification introduce new state for an origin that persists across browsing sessions?
 
-The browser could persist whether the user granted screen permission to the
-origin.
+The user agent could persist screen permission grants.
 
 ## 2.6 What information from the underlying platform, e.g. configuration data, is exposed by this specification to an origin?
 
@@ -163,8 +162,8 @@ same physical vicinity.
 
 On its own, it does not. In conjunction with the proposed
 [Window Placement API](https://github.com/spark008/window-placement/blob/master/EXPLAINER.md),
-this API could enable use cases that require opening a window in fullscreen mode
-on a display that does not contain a window with that origin at the time.
+this API could enable use cases where a window is opened in fullscreen mode on a
+display that does not contain a window accessible to that origin at the time.
 
 ## 2.12 What temporary identifiers might this specification create or expose to the web?
 
