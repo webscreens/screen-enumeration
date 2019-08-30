@@ -203,6 +203,9 @@ async () => {
 
 ## Privacy & Security
 
+For in-depth discussion on specific privacy and security concerns, see the
+[responses to the W3C Security and Privacy Self-Review Questionnaire](https://github.com/spark008/screen-enumeration/blob/master/security_and_privacy.md).
+
 Exposing the details of a user's multi-monitor setup presents a fingerprinting
 concern. In order to mitigate the amount of personally identifying information
 exposed, while maintaining the usefulness of the API, we can return the displays
@@ -225,6 +228,6 @@ properties we expose to the bare minimum needed to support our use cases.
 
 To ensure that the user is aware of the data they are sharing and has control
 over which displays the Web application can access, we propose implementing a
-permission prompt. Calling `requestDisplays()` would prompt the user to select
-which displays to share with the application.
+permission prompt. Calling `requestDisplays()` for the first time would prompt
+the user to select which displays to share with the application.
 
