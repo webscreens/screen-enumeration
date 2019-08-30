@@ -172,8 +172,17 @@ None.
 
 ## 2.13 How does this specification distinguish between behavior in first-party and third-party contexts?
 
+Only first-party contexts should be able to request display information.
+
 ## 2.14 How does this specification work in the context of a user agent’s Private \ Browsing or "incognito" mode?
+
+The behavior should be the same as for regular mode, except that the user agent
+should not persist permission data and should request permission every session.
 
 ## 2.15 Does this specification have a "Security Considerations" and "Privacy Considerations" section?
 
+Yes.
+
 ## 2.16 Does this specification allow downgrading default security characteristics?
+
+No.
