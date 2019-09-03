@@ -64,7 +64,7 @@ async () => {
   //   * `Navigator.bluetooth.requestDevice()`
   const displays = await navigator.screen.requestDisplays();
 
-  for (const display in displays) {
+  for (const display of displays) {
     // Properties currently exposed in the Screen interface.
     console.log(display.colorDepth);        // 24
     console.log(display.width);             // 1680
@@ -81,12 +81,12 @@ async () => {
 
     // Properties currently exposed in the Window interface.
     // Exposed as Window.devicePixelRatio.
-    console.log(display.scalingFactor);     // 2
+    console.log(display.scaleFactor);       // 2
 
     // New properties currently not Web-exposed.
     console.log(display.name);              // "DELL P2715Q"
-    console.log(display.primary);           // true
-    console.log(display.internal);          // true
+    console.log(display.isPrimary);         // true
+    console.log(display.isInternal);        // true
   }
 }
 ```
