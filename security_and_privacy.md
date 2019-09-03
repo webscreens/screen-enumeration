@@ -154,9 +154,9 @@ No.
 
 ## 2.10 Does this specification allow an origin to access other devices?
 
-No, but if multiple devices are connected to the same set of displays, an
-attacker may use the display information to infer that those devices are in the
-same physical vicinity.
+This API allows an origin to read properties of displays connected to the
+computer. The display may be internally connected (e.g. the built-in monitor in
+a laptop) or externally connected (e.g. an external monitor).
 
 ## 2.11 Does this specification allow an origin some measure of control over a user agent’s native UI?
 
