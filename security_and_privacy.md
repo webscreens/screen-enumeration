@@ -41,8 +41,9 @@ experience.
 
 For example, the API could expose a display's identity to the end user by its
 proper name in a display chooser UI implemented by the user agent, and to
-scripts by a hash value or number. This alternative, however, reduces the
-ability for applications to tailor the chooser UI to each of their use cases.
+scripts by a hash value keyed by both the display name and the origin. This
+alternative, however, reduces the ability for applications to tailor the chooser
+UI to each of their use cases.
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
