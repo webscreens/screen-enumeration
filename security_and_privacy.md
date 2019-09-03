@@ -157,6 +157,15 @@ This API allows an origin to read properties of displays connected to the
 computer. The display may be internally connected (e.g. the built-in monitor in
 a laptop) or externally connected (e.g. an external monitor).
 
+An origin cannot use this API to send commands to the displays, so hardening
+against malicious input is not a concern.
+
+Enumerating the displays connected to the computer does provide signficant
+entropy. If multiple computers are connected to the same set of displays, an
+attacker may use the display information to deduce that those computers are in
+the same physical vicinity. To mitigate this issue, user permission is required
+to access the display list, and the API is only available on secure contexts.
+
 ## 2.11 Does this specification allow an origin some measure of control over a user agent’s native UI?
 
 On its own, it does not. In conjunction with the proposed
