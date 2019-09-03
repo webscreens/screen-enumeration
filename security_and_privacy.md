@@ -46,13 +46,12 @@ ability for applications to tailor the chooser UI to each of their use cases.
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
-Access to display properties will be gated behind a permission prompt built into
-the browser.
+This API does not expose such information. Any exposed information may identify
+the machine, but not its user.
 
 ## 2.4 How does this specification deal with sensitive information?
 
-Access to display properties will be gated behind a permission prompt built into
-the browser. The API will also be restricted to secure contexts.
+This API does not expose such information.
 
 ## 2.5 Does this specification introduce new state for an origin that persists across browsing sessions?
 
@@ -79,7 +78,7 @@ to entire screen space)
 * whether the display is the primary display
 * whether the display is internal (built-in) or external
 
-## 2.7 Does this specification allow an origin access to sensors on a user’s device
+## 2.7 Does this specification allow an origin access to sensors on a user’s device?
 
 No.
 
