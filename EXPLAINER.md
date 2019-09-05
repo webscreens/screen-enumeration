@@ -34,11 +34,11 @@ and can be used to enhance other parts.
 ### Future goals
 
 * Enable access to Chromecast displays
+* Support screen change events (e.g. when a display is added/removed)
 
 ### Non-goals
 
 * Expose an exhaustive set of display properties known to the OS
-* Support screen change events (e.g. when a display is added/removed)
 
 ## Proposal
 
@@ -72,6 +72,7 @@ async () => {
     console.log(display.availWidth);        // 1680
     console.log(display.availHeight);       // 1027
     console.log(display.orientation.type);  // "landscape-primary"
+    console.log(display.orientation.angle); // 0
 
     // Unstandardized properties in the Screen interface.
     console.log(display.left);              // -1680
@@ -160,11 +161,27 @@ may occupy.
   * Already exposed via `Screen.availTop`.
 * **`Display.name`**: A human-readable name that uniquely identifies this
 display.
-* **`Display.scalingFactor`**: The number of hardware pixels per CSS pixel.
+* **`Display.scaleFactor`**: The number of hardware pixels per CSS pixel.
   * Already exposed via `Window.devicePixelRatio`.
-* **`Display.primary`**: Whether this display is the primary display.
-* **`Display.internal`**: Whether this display is internal (built-in) or
+* **`Display.isPrimary`**: Whether this display is the primary display.
+* **`Display.isInternal`**: Whether this display is internal (built-in) or
 external.
+
+## Additional Properties To Consider
+
+These are some additional properties worth considering, but they may offer less
+value for the use cases considered than other properties identified above.
+
+* **`Display.id`**: The Extended Display Identification Data or another ID.
+* **`Display.hasTouchSupport`**: True if the display supports touch input.
+* **`Display.hasAccelerometer`**: True if the display has an accelerometer.
+* **`Display.dpi`**: The number of pixels per inch.
+* **`Display.isNative`**: True if the display's resolution is native.
+* **`Display.isInterlaced`**: True if the display's mode is interlaced.
+* **`Display.refreshRate`**: The display's refresh rate in hertz.
+* **`Display.overscan`**: The display's insets within its screen's bounds.
+* **`Display.mirroringInfo`**: Info about the display mirroring setup.
+* **`Display.layoutInfo`**: Info about the layout relative to other displays.
 
 ## Alternative proposals
 
@@ -201,6 +218,18 @@ async () => {
 }
 ```
 
+## Open Questions
+
+* How does the [Presentation API](https://developer.mozilla.org/en-US/docs/Web/API/Presentation_API)
+overlap and intersect with the functionality of this proposed API?
+* How would `Display` objects correlate with the existing `Screen` API?
+  * How would one find the `Display` object corresponds to the local `Screen`?
+    * Should there be a `window.display` alongside of `window.screen`?
+* Which properties should `Display` include? There are many potential properties
+and alternative ways to convey the same information. Care should be taken to
+choose a concise and valuable set of properties.
+  * Should `Display` be a strict superset or match of the `Screen` object?
+
 ## Privacy & Security
 
 For in-depth discussion on specific privacy and security concerns, see the
@@ -222,7 +251,9 @@ properties we expose to the bare minimum needed to support our use cases.
   * display name
 * New properties needed to determine which display is the most appropriate for
   a given type of content:
-  * resolution or scale factor
+  * resolution
+  * scale factor
+  * color depth
   * primary vs secondary display
   * built-in vs external display
 
