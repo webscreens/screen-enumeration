@@ -66,13 +66,13 @@ async () => {
 
   for (const display of displays) {
     // Properties currently exposed in the Screen interface.
-    console.log(display.colorDepth);        // 24
     console.log(display.width);             // 1680
     console.log(display.height);            // 1050
     console.log(display.availWidth);        // 1680
     console.log(display.availHeight);       // 1027
     console.log(display.orientation.type);  // "landscape-primary"
     console.log(display.orientation.angle); // 0
+    console.log(display.colorDepth);        // 24
 
     // Unstandardized properties in the Screen interface.
     console.log(display.left);              // -1680
@@ -144,34 +144,52 @@ would tuck the API into a less chaotic wing of the global scope. In order to
 support the API in service workers, `WorkerNavigator` would additionally need to
 implement the API.
 
-## New Display Properties
+## `Display` Properties
 
-Coordinates are defined in the screen coordinate system, i.e. the origin is at
-the top-left corner of the primary display.
+Note: Coordinates are defined in the screen coordinate system, i.e. the origin
+is at the top-left corner of the primary display.
 
-* **`Display.left`**: X-coordinate of this display's left edge.
-  * Already exposed via `Window.screenLeft` and `Window.screenX`.
-* **`Display.top`**: Y-coordinate of this display's top edge.
-  * Already exposed via `Window.screenTop` and `Window.screenY`.
-* **`Display.availLeft`**: Leftmost x-coordinate of this display that the window
-may occupy.
-  * Already exposed via `Screen.availLeft`.
-* **`Display.availTop`**: Topmost y-coordinate of this display that the window
-may occupy.
-  * Already exposed via `Screen.availTop`.
-* **`Display.name`**: A human-readable name that uniquely identifies this
-display.
-* **`Display.scaleFactor`**: The number of hardware pixels per CSS pixel.
-  * Already exposed via `Window.devicePixelRatio`.
-* **`Display.isPrimary`**: Whether this display is the primary display.
-* **`Display.isInternal`**: Whether this display is internal (built-in) or
-external.
+Properties already exposed in the
+[`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) and
+[`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interfaces:
+* **`Display.width`**: the width of the display, in pixels.
+  * Already exposed via `Screen.width`.
+* **`Display.height`**: the height of the display, in pixels.
+  * Already exposed via `Screen.height`.
+* **`Display.availWidth`**: the width of the display, in pixels, minus permanent
+or semipermanent user interface features displayed by the operating system, such
+as the Taskbar on Windows.
+  * Already exposed via `Screen.availWidth`.
+* **`Display.availHeight`**: the height of the display, in pixels, minus
+permanent or semipermanent user interface features displayed by the operating
+system, such as the Taskbar on Windows.
+  * Already exposed via `Screen.availHeight`.
+* **`Display.orientation`**: the [`ScreenOrientation`](https://developer.mozilla.org/en-US/docs/Web/API/ScreenOrientation)
+instance associated with this display.
+  * Already exposed via `Screen.orientation`.
+* **`Display.colorDepth`**: the color depth of the display.
+  * Already exposed via `Screen.colorDepth` and `Screen.pixelDepth`.
+* **`Display.left`**: the distance in pixels from the left side of the primary
+display to the left side of this display.
+  * Unstandardized; already exposed via `Window.screenLeft` and
+`Window.screenX`.
+* **`Display.top`**:  the distance in pixels from the top of the primary display
+to the top of this display.
+  * Unstandardized; already exposed via `Window.screenTop` and `Window.screenY`.
+* **`Display.availLeft`**: the x-coordinate of the first pixel that is not
+allocated to permanent or semipermanent user interface features on this display.
+  * Unstandardized; already exposed via `Screen.availLeft`.
+* **`Display.availTop`**: the y-coordinate of the first pixel that is not
+allocated to permanent or semipermanent user interface features on this display.
+  * Unstandardized; already exposed via `Screen.availTop`.
+* **`Display.scaleFactor`**: the ratio between physical pixels and device
+independent pixels in the current display.
+  * Unstandardized; already exposed as `Window.devicePixelRatio`
 
-## Additional Properties To Consider
-
-These are some additional properties worth considering, but they may offer less
-value for the use cases considered than other properties identified above.
-
+New properties currently not Web-exposed, some may be more useful than others:
+* **`Display.name`**: A human-readable name that identifies this display.
+* **`Display.isPrimary`**: True if this display is the primary display.
+* **`Display.isInternal`**: True if this display is internal (built-in).
 * **`Display.id`**: The Extended Display Identification Data or another ID.
 * **`Display.hasTouchSupport`**: True if the display supports touch input.
 * **`Display.hasAccelerometer`**: True if the display has an accelerometer.
