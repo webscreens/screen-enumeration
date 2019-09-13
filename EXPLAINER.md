@@ -86,8 +86,8 @@ async () => {
 
     // New properties currently not Web-exposed.
     console.log(display.name);              // "DELL P2715Q"
-    console.log(display.isPrimary);         // true
-    console.log(display.isInternal);        // true
+    console.log(display.primary);           // true
+    console.log(display.internal);          // true
   }
 }
 ```
@@ -149,7 +149,7 @@ implement the API.
 Note: Coordinates are defined in the screen coordinate system, i.e. the origin
 is at the top-left corner of the primary display.
 
-Properties already exposed in the
+### Properties already exposed in the
 [`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) and
 [`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interfaces:
 * **`Display.width`**: the width of the display, in pixels.
@@ -186,20 +186,23 @@ allocated to permanent or semipermanent user interface features on this display.
 independent pixels in the current display.
   * Unstandardized; already exposed as `Window.devicePixelRatio`
 
-New properties currently not Web-exposed, some may be more useful than others:
+### New properties currently not Web-exposed that may be important to priorize.
 * **`Display.name`**: A human-readable name that identifies this display.
-* **`Display.isPrimary`**: True if this display is the primary display.
-* **`Display.isInternal`**: True if this display is internal (built-in).
+* **`Display.primary`**: True if this display is the primary display.
+* **`Display.internal`**: True if this display is internal (built-in).
+
+### New properties currently not Web-exposed that may be worth considering.
 * **`Display.id`**: The Extended Display Identification Data or another ID.
-* **`Display.hasTouchSupport`**: True if the display supports touch input.
-* **`Display.hasAccelerometer`**: True if the display has an accelerometer.
+* **`Display.touchSupport`**: True if the display supports touch input.
+* **`Display.accelerometer`**: True if the display has an accelerometer.
 * **`Display.dpi`**: The number of pixels per inch.
-* **`Display.isNative`**: True if the display's resolution is native.
-* **`Display.isInterlaced`**: True if the display's mode is interlaced.
+* **`Display.native`**: True if the display's resolution is native.
+* **`Display.interlaced`**: True if the display's mode is interlaced.
 * **`Display.refreshRate`**: The display's refresh rate in hertz.
 * **`Display.overscan`**: The display's insets within its screen's bounds.
 * **`Display.mirroringInfo`**: Info about the display mirroring setup.
 * **`Display.layoutInfo`**: Info about the layout relative to other displays.
+* **`Display.hidden`**: True if the display is not visible (eg. closed laptop).
 
 ## Alternative proposals
 
