@@ -149,7 +149,7 @@ implement the API.
 Note: Coordinates are defined in the screen coordinate system, i.e. the origin
 is at the top-left corner of the primary display.
 
-### Properties already exposed in the
+Properties already exposed in the
 [`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) and
 [`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interfaces:
 * **`Display.width`**: the width of the display, in pixels.
@@ -186,12 +186,12 @@ allocated to permanent or semipermanent user interface features on this display.
 independent pixels in the current display.
   * Unstandardized; already exposed as `Window.devicePixelRatio`
 
-### New properties currently not Web-exposed that may be important to priorize.
+New properties currently not Web-exposed that may be important to priorize.
 * **`Display.name`**: A human-readable name that identifies this display.
 * **`Display.primary`**: True if this display is the primary display.
 * **`Display.internal`**: True if this display is internal (built-in).
 
-### New properties currently not Web-exposed that may be worth considering.
+New properties currently not Web-exposed that may be worth considering.
 * **`Display.id`**: The Extended Display Identification Data or another ID.
 * **`Display.touchSupport`**: True if the display supports touch input.
 * **`Display.accelerometer`**: True if the display has an accelerometer.
