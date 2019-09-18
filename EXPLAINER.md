@@ -6,7 +6,7 @@ As computing devices more commonly support and use multiple displays, it becomes
 more important to give web developers the right tools to present their content
 across the set of connected displays.
 
-Operating systems and their window managers almost univerally offer the ability
+Operating systems and their window managers almost universally offer the ability
 for users to connect multiple display devices and virtually arrange them in a 2D
 plane, extending the overall screen space, which is useful in many scenarios.
 
@@ -198,7 +198,7 @@ allocated to permanent or semipermanent user interface features on this display.
 independent pixels in the current display.
   * Unstandardized; already exposed as `Window.devicePixelRatio`
 
-New properties currently not Web-exposed that may be important to priorize.
+New properties currently not Web-exposed that may be important to prioritize.
 * **`Display.primary`**: True if this display is the primary display.
   * May be useful for determining the placement of prominent dashboard windows.
   * Can be inferred from information already exposed; i.e. `Screen.left` and
@@ -226,7 +226,7 @@ New properties currently not Web-exposed that may be worth considering.
 * **`Display.overscan`**: The display's insets within its screen's bounds.
   * May be useful for adapting content presentation for some display technology.
 * **`Display.hidden`**: True if the display is not visible (e.g. closed laptop).
-  * May be useful for recognzing when displays may be active but not visible.
+  * May be useful for recognizing when displays may be active but not visible.
 
 ## Alternative proposals
 
@@ -279,21 +279,17 @@ For in-depth discussion on specific privacy and security concerns, see the
 [responses to the W3C Security and Privacy Self-Review Questionnaire](https://github.com/spark008/screen-enumeration/blob/master/security_and_privacy.md).
 
 Exposing the details of a user's multi-display setup presents a fingerprinting
-concern. In order to mitigate the amount of personally identifying information
-exposed, while maintaining the usefulness of the API, implementrs can return the
-displays ordered by a non-OS-differentiating property, like increasing `width`.
+concern. To minimize the fingerprintable space, it's prudent to limit the set of
+display properties exposed to the minimum needed to support common use cases.
 
-It should be noted that some information is already exposed through exisisting
-API surfaces. Beyond explicitly providing information about the single display
+It should be noted that some information is already exposed through existing API
+surfaces. Beyond explicitly providing information about the single display
 currently hosting the content window, the `Screen` interface's `left` and `top`
 values and the `Window` interface's `screenX` and `screenY` values are generally
 given in the overall screen space coordinate system. This means that sites can
 infer whether the current display is primary or not, and potentially infer at
 least one dimension of the primary display, or the potential presence of more
 than two displays, given the standard resolutions offered by display devices.
-
-To minimize the fingerprintable space, it's prudent to limit the set of display
-properties exposed to the minimum needed to support common use cases.
 
 To reduce the chance that the user's screen data gets compromised, implementers
 could limit the API to secure contexts. To ensure that the user is aware of the
