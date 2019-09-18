@@ -11,10 +11,10 @@ for users to connect multiple display devices and virtually arrange them in a 2D
 plane, extending the overall screen space, which is useful in many scenarios.
 
 The web platform currently exposes information through the
-[`Screen` interface](https://developer.mozilla.org/en-US/docs/Web/API/Screen)
+[`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) interface
 with details about the display device currently hosting the content window. This
 and other properties of the
-[`Window` interface](https://developer.mozilla.org/en-US/docs/Web/API/Window),
+[`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interface,
 such as `window.screenX` and `window.screenX` surface some information about the
 user's overall screen space when the content window is located on a secondary
 display, but they provide an incomplete picture.
