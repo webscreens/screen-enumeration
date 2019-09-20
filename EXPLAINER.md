@@ -10,19 +10,17 @@ Operating systems and their window managers almost universally offer the ability
 for users to connect multiple display devices and virtually arrange them in a 2D
 plane, extending the overall screen space, which is useful in many scenarios.
 
-The web platform currently exposes information through the
-[`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) interface
+The web platform currently exposes information through the [`Screen`][1] interface
 with details about the display device currently hosting the content window. This
-and other properties of the
-[`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interface,
-such as `window.screenX` and `window.screenX` surface some information about the
-user's overall screen space when the content window is located on a secondary
-display, but they provide an incomplete picture.
+and other properties of the [`Window`][2] interface, such as `window.screenX` and 
+`window.screenX` surface some information about the user's overall screen space 
+when the content window is located on a secondary display, but they provide an 
+incomplete picture.
 
 This proposal aims to give developers access to a list of the available displays
 that comprise the overall screen space, as well as the essential properties of
 each display. It is foundational for some parts of the
-[Window Placement API proposal](https://github.com/spark008/window-placement).
+[Window Placement API proposal][3].
 
 ## Use cases
 
@@ -62,10 +60,9 @@ permission prompt. Upon success, the method resolves to an array of `Display`
 objects, and rejects otherwise. The `Display` object should contain properties
 much like those already exposed in the `Screen` interface, and potentially other
 properties needed to support window placement features outlined in the proposed
-[Window Placement API](https://github.com/spark008/window-placement/blob/master/EXPLAINER.md).
-The interface should be implemented by both the `Navigator` and
-`WorkerNavigator` interfaces, so that the API is exposed on both `Window` and
-`ServiceWorker` execution contexts.
+[Window Placement API][3]. The interface should be implemented by both the 
+`Navigator` and `WorkerNavigator` interfaces, so that the API is exposed on both 
+`Window` and `ServiceWorker` execution contexts.
 
 ```js
 async () => {
@@ -161,9 +158,7 @@ implement the API.
 Note: Coordinates are defined in the overall screen coordinate system, i.e. the
 origin is at the top-left corner of the primary display.
 
-Properties already exposed in the
-[`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) and
-[`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interfaces:
+Properties already exposed in the [`Screen`][1] and [`Window`][2] interfaces:
 * **`Display.width`**: the width of the display, in pixels.
   * Already exposed via `Screen.width`.
 * **`Display.height`**: the height of the display, in pixels.
@@ -297,3 +292,7 @@ data they are sharing and has control over which displays a site can access,
 implementers could gate the success of enumeration upon the granting of explicit
 permission through a prompt. Calling `getDisplays()` for the first time could
 prompt the user to select which displays (if any) to share with the site.
+
+[1]: https://developer.mozilla.org/en-US/docs/Web/API/Screen
+[2]: https://developer.mozilla.org/en-US/docs/Web/API/Window
+[3]: https://github.com/spark008/window-placement
