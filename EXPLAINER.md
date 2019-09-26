@@ -167,13 +167,6 @@ implemented by both the `Window` and `WorkerGlobalScope` interfaces.
 The [`Screen`][1] interface supplies a fairly comprehensive set of display
 properties, but there are use cases for additional properties, considered below.
 
-New properties already Web-exposed in another manner:
-* **`Screen.devicePixelRatio`**: the ratio of the resolution in physical pixels
-to the resolution in CSS pixels on this screen.
-  * Unstandardized; already exposed as `Window.devicePixelRatio`
-  * May be useful for customizing the appearance of content when the hosting
-    window spans across multiple displays with different pixel ratios.
-
 New properties currently not Web-exposed that may be important to prioritize.
 * **`Screen.internal`**: True if this display is internal (built-in).
   * May be useful for showing slideshows on external displays (projector) and
@@ -182,6 +175,11 @@ New properties currently not Web-exposed that may be important to prioritize.
   * May be useful for determining the placement of prominent dashboard windows.
   * Can be inferred from unstandardized properties already exposed; i.e.
     `Screen.left` and `Screen.top` are both zero only on the primary display.
+* **`Screen.scaleFactor`**: The ratio between physical pixels and device
+  independent pixels for this display.
+  * May be useful for customizing the appearance of content when the hosting
+    window spans across multiple displays with different pixel ratios.
+  * TBD: How to effectively pair this with `Window.devicePixelRatio`?
 * **`Screen.name`**: A human-readable name that identifies this display.
   * May be useful for prompting/notifying users about window placement actions.
   * May be useful for persisting window placements for certain displays.
@@ -197,8 +195,10 @@ New properties currently not Web-exposed that may be worth considering.
   * May be useful for presenting touch-specific UI layouts.
 * **`Screen.accelerometer`**: True if the display has an accelerometer.
   * May be useful for showing immersive controls (e.g. game steering wheel).
-* **`Screen.dpi`**: The number of pixels per inch.
+* **`Screen.dpi`**: The display density as the number of pixels per inch.
   * May be useful for presenting content with tailored physical scale factors.
+* **`Screen.subpixelOrder`**: The order/orientation of this display's subpixels.
+  * May be useful for adapting content presentation for some display technology.
 * **`Screen.interlaced`**: True if the display's mode is interlaced.
   * May be useful for adapting content presentation for some display technology.
 * **`Screen.refreshRate`**: The display's refresh rate in hertz.
@@ -326,7 +326,7 @@ could limit the API to secure contexts. To ensure that the user is aware of the
 data they are sharing and has control over which displays a site can access,
 implementers could gate the success of enumeration upon the granting of explicit
 permission through a prompt. Calling `getScreens()` for the first time could
-prompt the user to select which screens (if any) to share with the site.
+prompt the user to select which `Screens`, if any, to share with the site.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Screen
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/Window
