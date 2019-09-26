@@ -10,7 +10,7 @@ The web platform currently offers some information through the [`Screen`][1]
 interface, but this only provides details about the physical display currently
 hosting the associated content [`Window`][2].
 
-As multi-display computing becomes more a common and critical part of user
+As multi-display computing becomes a more common and critical part of user
 experiences, it becomes more important to give web developers information and
 tools to leverage that expanded visual environment.
 
