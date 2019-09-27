@@ -29,7 +29,7 @@ is also critical for some of the use cases explored in this document.
   * Launch a dashboard that opens a set of windows across multiple displays
   * User interacts with dashboard controls to move windows between displays
 * **Windows spanning multiple displays with different hardware properties**
-  * Content can be optimized for the display hardware where it is rendered
+  * Optimize content for the display hardware where it is rendered
 
 ## Goals
 
@@ -45,9 +45,10 @@ is also critical for some of the use cases explored in this document.
 ### Non-goals
 
 * Expose an exhaustive set of display properties known to the OS
-* Enable access to remote displays (see the
+* Enumerate remote displays connected to other devices
+  * See the
   [Presentation](https://www.w3.org/TR/presentation-api/)
-  and [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs)
+  and [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs
 
 ## Proposal
 
@@ -295,6 +296,23 @@ interface is inadvisable, as it would come with many complications, for example:
   comprised of rectangles with different sizes and un-aligned positions. This
   cannot be adequately represented by the current `Screen` interface.
 * The set of connected physical displays may have different `Screen` properties.
+
+### Relation to Presentation and Remote Playback APIs
+
+The [Presentation](https://www.w3.org/TR/presentation-api/) and
+[Remote Playback](https://www.w3.org/TR/remote-playback/) APIs provide access to
+displays connected on remote devices, and to device-local secondary displays,
+but they are geared towards showing a single fullscreen content window on each
+external display and have other limitations regarding our described use cases.
+
+This proposal and the associated [Window Placement API][2] proposal aim to offer
+compelling features that complement and extend existing Web Platform APIs. For
+example these proposal would offer sites the ability to show their own list of
+displays to the user, open non-fullscreen windows, limit display selection to
+those directly connected to controller device (not those on remote devices),
+instantly show content on multiple displays without separate user interaction
+steps for each display, and to swap the displays hosting each content window
+without re-selecting displays.
 
 ## Privacy & Security
 
