@@ -1,4 +1,4 @@
-# Screen Enumeration
+# Screen Enumeration on the web
 
 ## Abstract
 
@@ -307,7 +307,7 @@ external display and have other limitations regarding our described use cases.
 
 This proposal and the associated [Window Placement API][2] proposal aim to offer
 compelling features that complement and extend existing Web Platform APIs. For
-example these proposal would offer sites the ability to show their own list of
+example this proposal would offer sites the ability to show their own list of
 displays to the user, open non-fullscreen windows, limit display selection to
 those directly connected to controller device (not those on remote devices),
 instantly show content on multiple displays without separate user interaction
