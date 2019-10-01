@@ -116,7 +116,7 @@ document/frame execution context via the
 * width and height of user window area (excluding system UI areas), i.e.
 [`Screen.availWidth`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availWidth),
 [`Screen.availHeight`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availHeight)
-* orientation (landscape vs. portrait and rotation in degress), i.e.
+* orientation (landscape vs. portrait and rotation in degrees), i.e.
 [`Screen.orientation`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/orientation)
 
 The following unstandardized properties of the `Screen` interface, exposed
