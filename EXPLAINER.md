@@ -72,11 +72,12 @@ async () => {
     console.log(screen.height);            // 1050
     console.log(screen.availWidth);        // 1680
     console.log(screen.availHeight);       // 1027
-    console.log(screen.orientation.type);  // "landscape-primary"
-    console.log(screen.orientation.angle); // 0
     console.log(screen.colorDepth);        // 24
+    console.log(screen.pixelDepth);        // 24
 
     // Unstandardized properties in the Screen interface.
+    console.log(screen.orientation.type);  // "landscape-primary"
+    console.log(screen.orientation.angle); // 0
     console.log(screen.left);              // 1680
     console.log(screen.top);               // 0
     console.log(screen.availLeft);         // 0
@@ -208,6 +209,16 @@ New properties currently not Web-exposed that may be worth considering.
   * May be useful for adapting content presentation for some display technology.
 * **`Screen.hidden`**: True if the display is not visible (e.g. closed laptop).
   * May be useful for recognizing when displays may be active but not visible.
+
+Existing properties that might need specification changes or to be supplanted:
+* **`Screen.colorDepth` and `Screen.pixelDepth`**: The
+  [spec](https://www.w3.org/TR/cssom-view-1/#screen) says these attributes "must
+  return 24" and "Note: The colorDepth and pixelDepth attributes are useless but
+  are included for compatibility."
+  * May be useful for selecting the optimal display of creative/medical content.
+  * Consider giving the physical display's pixel/color depth in one or both of
+    these attributes, or in one or more new attribute (e.g. depth, bitsPerPixel,
+    depthPerComponent, isMonochrome, etc.).
 
 ## Alternative proposals
 
