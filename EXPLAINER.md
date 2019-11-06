@@ -36,27 +36,22 @@ is also critical for some of the use cases explored in this document.
 ### Current goals
 
 * Enumerate available displays from relevant execution contexts
-* Expose properties needed to show content on the most suitable display
-
-### Future goals
-
+* Standardize properties needed to show content on the most suitable display
 * Surface events when the set of displays or their properties change
 
 ### Non-goals
 
 * Expose an exhaustive set of display properties known to the OS
 * Enumerate remote displays connected to other devices
-  * See the
-  [Presentation](https://www.w3.org/TR/presentation-api/)
-  and [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs
+  * See the [Presentation](https://www.w3.org/TR/presentation-api/) and
+    [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs
 
 ## Proposal
 
-The leading option proposed here is to introduce a new `ScreenManager` interface
-with a `getScreens()` method. The method resolves to an array of [`Screen`][1]
-objects on success, and rejects otherwise. The interface should be implemented
-by both the `Navigator` and `WorkerNavigator` interfaces, so that the API is
-exposed on both `Window` and `ServiceWorker` execution contexts.
+The leading option proposed here is to introduce a `getScreens()` method, which
+resolves to an array of [`Screen`][1] objects on success, and rejects otherwise.
+The method could be implemented on the `WindowOrWorkerGlobalScope` mixin, making
+screen info available in both `Window` and `Worker` execution contexts.
 
 Additionally, this proposal would introduce new properties to the [`Screen`][1]
 interface, providing information to help optimize content presentation.
@@ -64,42 +59,56 @@ interface, providing information to help optimize content presentation.
 ```js
 async () => {
   // NEW: Returns an Array of Screen objects connected to the device on success.
-  const screens = await navigator.screen.getScreens();
+  const screens = await getScreens();
 
   for (const screen of screens) {
-    // Standardized properties in the Screen interface.
-    console.log(screen.width);             // 1680
-    console.log(screen.height);            // 1050
-    console.log(screen.availWidth);        // 1680
-    console.log(screen.availHeight);       // 1027
-    console.log(screen.colorDepth);        // 24
-    console.log(screen.pixelDepth);        // 24
+    // Properties specified in https://www.w3.org/TR/cssom-view/#screen
+    console.log(screen.width);         // 1680
+    console.log(screen.height);        // 1050
+    console.log(screen.availWidth);    // 1680
+    console.log(screen.availHeight);   // 1027
+    console.log(screen.colorDepth);    // 24
+    console.log(screen.pixelDepth);    // 24
 
-    // Unstandardized properties in the Screen interface.
-    console.log(screen.orientation.type);  // "landscape-primary"
-    console.log(screen.orientation.angle); // 0
-    console.log(screen.left);              // 1680
-    console.log(screen.top);               // 0
-    console.log(screen.availLeft);         // 0
-    console.log(screen.availTop);          // 23
+    // Properties specified in https://www.w3.org/TR/screen-orientation
+    console.log(screen.orientation);   // { type: "landscape-primary", ... }
 
-    // NEW: Currently exposed as Window.devicePixelRatio.
-    console.log(screen.devicePixelRatio);  // 2
+    // NEW: Properties implemented by some browsers that should be standardized.
+    // See MDN docs: https://developer.mozilla.org/en-US/docs/Web/API/Screen
+    console.log(screen.left);          // 1680
+    console.log(screen.top);           // 0
+    console.log(screen.availLeft);     // 0
+    console.log(screen.availTop);      // 23
 
-    // NEW: Properties currently not Web-exposed.
-    console.log(screen.internal);          // false
-    console.log(screen.primary);           // false (discernable from top/left)
-    console.log(screen.name);              // "DELL P2715Q"
+    // NEW: Properties proposed here that should be standardized.
+    console.log(screen.scaleFactor);   // 2
+    console.log(screen.internal);      // false
+    console.log(screen.primary);       // false (discernable from top/left)
+    console.log(screen.name);          // "DELL P2715Q" or "Display 1"
+    console.log(screen.touchSupport);  // false
   }
 }
 ```
 
-Inspiration for the shape of this API comes from similar APIs, such as
-[`Bluetooth.requestDevice()`](https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/requestDevice).
-Using an interface facilitates encapsulation of future screen-related APIs, e.g.
-managing event handling for when the set of screens or their properties change.
+This proposal also aims to introduce a `screenchange` event to be fired when the
+set of screens or their properties change. The event would be available on the
+`Window` and `WorkerGlobalScope` objects, which both implement `EventTarget`.
 
-### **Synchronicity**
+```js
+self.addEventListener('screenchange', function(event) {
+  var highDPIScreen = getScreenWithHighestDPI(event.screens);
+  if (window.screen != highDPIScreen)
+    informUserOfAvailableScreen(highDPIScreen);
+});
+```
+
+Inspiration for the shape of this API comes from the existing `Window.screen`
+attribute location, with expanded access to worker contexts. Similar APIs exist,
+like `navigator.languages` and `self.addEventListener("onlanguagechange", ...)`.
+
+See the Alternative Proposals section for some other possible API shapes.
+
+### Synchronicity
 
 One advantage of asynchronous APIs is that they are non-blocking. With potential
 privacy concerns with screen enumeration, it is possible that the API should
@@ -111,7 +120,7 @@ Additionally, system window managers themselves often provide asynchronous APIs,
 and this pattern would allow implementers to gather the latest available
 information without blocking other application processing or requiring a cache.
 
-### **Nomenclature**
+### Nomenclature
 
 Existing native APIs use a variety of nomenclatures to describe the distinction
 between physical display devices and the overall space composed by their virtual
@@ -119,7 +128,7 @@ arrangement. As the web platform already uses the [`Screen`][1] interface to
 describe a single physical unit of rendering space, it seems natural to follow
 this convention and work in terms of a multi-`Screen` display environment.
 
-### **Multi-Screen Coordinates**
+### Multi-Screen Coordinates
 
 By common convention, the top-left corner of the system's primary display
 defines the origin of the coordinate system used to position other displays
@@ -144,32 +153,45 @@ taken to be in the same coordinate space, relative to the primary display.
 It may be beneficial to actually standardize this pattern, or to provide some
 non-normative notes encouraging implementers to follow this common convention.
 
-### **Scope**: `Navigator`/`WorkerNavigator` vs `WindowOrWorkerGlobalScope`
+### Scope: `WindowOrWorkerGlobalScope` or `Navigator`/`WorkerNavigator`
 
-Taking inspiration from existing similarly shaped Web APIs, there are a couple
-of places where the API could reasonably live.
+Taking inspiration from existing Web APIs, there are a couple of places where
+the proposed API could reasonably live.
 
-1. The [`Navigator`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
+1. The `WindowOrWorkerGlobalScope` mixin, implemented by `Window` and
+`WorkerGlobalScope` interfaces, could be an intuitive host this API. Those
+familiar with `window.screen` might anticipate a similar access pattern for
+information about multi-screen environments, and access from service workers may
+be valuable for the [Window Placement API proposal][3]. It should be noted that
+`Window` already hosts many attributes, functions and interfaces, so care should
+be taken not to overburden this surface.
+
+2. The [`Navigator`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
 object nested beneath the global scope may be a good potential location for this
 API, as the set of connected displays could be reasonably considered an aspect
 of the user agent's environment. In order to support the API in service workers,
 [`WorkerNavigator`](https://developer.mozilla.org/en-US/docs/Web/API/WorkerNavigator)
 would also need to implement the API.
 
-2. The global scope, `Window`, is appealing as those familiar with the
-`window.screen` API might anticipate finding multi-display functionality in a
-corresponding `window.screens` API. However, the `Window` object currently
-contains a sprawling mishmash of unrelated APIs, so tacking on additional weight
-may contribute to the disorganization. In order to support the API in service
-workers, we'd define the API in the `WindowOrWorkerGlobalScope` mixin, which is
-implemented by both the `Window` and `WorkerGlobalScope` interfaces.
-
 ## New [`Screen`][1] Properties
 
 The [`Screen`][1] interface supplies a fairly comprehensive set of display
 properties, but there are use cases for additional properties, considered below.
 
-New properties currently not Web-exposed that may be important to prioritize.
+Properties implemented by some browsers that should be standardized; see
+[MDN](https://developer.mozilla.org/en-US/docs/Web/API/Screen). These properties
+are useful for understanding the display layout relative to content bounds and
+for the [Window Placement API proposal][3].
+* **`Screen.left`**: The distance from the left side of the primary display to
+  the left side of this display.
+* **`Screen.top`**: The distance from the top of the primary display to the top
+  of this display.
+* **`Screen.availLeft`**: The distance from the left side of the primary display
+  to the left side of the region available for windows on this display.
+* **`Screen.availTop`**: The distance from the top of the primary display to the
+  top of the region available for windows on this display.
+
+New properties that may be important to prioritize.
 * **`Screen.internal`**: True if this display is internal (built-in).
   * May be useful for showing slideshows on external displays (projector) and
     controls/notes on internal displays (laptop screen).
@@ -182,19 +204,15 @@ New properties currently not Web-exposed that may be important to prioritize.
   * May be useful for customizing the appearance of content when the hosting
     window spans across multiple displays with different pixel ratios.
   * TBD: How to effectively pair this with `Window.devicePixelRatio`?
-* **`Screen.name`**: A human-readable name that identifies this display.
+* **`Screen.name`** or **`Screen.id`**: A name or identifier for this display.
   * May be useful for prompting/notifying users about window placement actions.
   * May be useful for persisting window placements for certain displays.
-  * The user agent could use basic names, like "Display 1" in place of more
+  * The user agent could supply basic names, like "Display 1" in place of more
     sensitive device-specific names, reducing the fingerprintable surface.
-
-New properties currently not Web-exposed that may be worth considering.
-* **`Screen.id`**: The Extended Display Identification Data or another ID.
-  * May be useful for persisting window placements for certain displays.
-  * The user agent could map sensitive EDIDs to a index for the device-unique or
-    user-unique set of known displays, reducing the fingerprintable surface.
 * **`Screen.touchSupport`**: True if the display supports touch input.
   * May be useful for presenting touch-specific UI layouts.
+
+New properties that may be worth considering.
 * **`Screen.accelerometer`**: True if the display has an accelerometer.
   * May be useful for showing immersive controls (e.g. game steering wheel).
 * **`Screen.dpi`**: The display density as the number of pixels per inch.
@@ -210,40 +228,43 @@ New properties currently not Web-exposed that may be worth considering.
 * **`Screen.hidden`**: True if the display is not visible (e.g. closed laptop).
   * May be useful for recognizing when displays may be active but not visible.
 
-Existing properties that might need specification changes or to be supplanted:
-* **`Screen.colorDepth` and `Screen.pixelDepth`**: The
-  [spec](https://www.w3.org/TR/cssom-view-1/#screen) says these attributes "must
-  return 24" and "Note: The colorDepth and pixelDepth attributes are useless but
-  are included for compatibility."
-  * May be useful for selecting the optimal display of creative/medical content.
-  * Consider giving the physical display's pixel/color depth in one or both of
-    these attributes, or in one or more new attribute (e.g. depth, bitsPerPixel,
-    depthPerComponent, isMonochrome, etc.).
+### Changes to `colorDepth` and `pixelDepth`
+
+The [W3C Working Draft](https://www.w3.org/TR/cssom-view/#dom-screen-colordepth)
+states that `Screen.colorDepth` and `Screen.pixelDepth` "must return 24" and
+even explains that these "attributes are useless", but the latest
+[Editor’s Draft](https://drafts.csswg.org/cssom-view/#dom-screen-colordepth)
+provides a more useful specification for these values. There is a clear signal
+from developers that these values are meaningful and accurate, which is useful
+for selecting the optimal display to present medical and creative content.
 
 ## Alternative proposals
 
-### Alternative names and locations for getScreens()
+### Alternative names and scopes for getScreens()
 
-Besides the leading proposal for `Navigator` and `WorkerNavigator` to implement
-a new `ScreenManager` interface with a `getScreens()` method, some alternative
-names and locations for this method are listed below.
+Besides the leading proposal for `WindowOrWorkerGlobalScope` to implement a new
+`getScreens()` method, some alternative names and locations are listed below.
+
+A `Screens` Web IDL namespace could provide a shared location for `getScreens()`
+and related functionality that may be added in the future, but at this time,
+there is no obvious additional API surface to motivate that approach. Using a
+namespace would be preferable to a non-constructable class or interface.
 
 ```js
 async () => {
-  // 1: `ScreenManager` interface on `WindowOrWorkerGlobalScope`, like:
-  //   * `WindowOrWorkerGlobalScope.caches.keys()`
-  //   * `WindowOrWorkerGlobalScope.indexedDB.databases()`
-  // Note: This cannot use `screen`, per the existing `window.screen` property.
-  const screensV1 = await self.screens.getScreens();
+  // 1: Screens namespace with get() on WindowOrWorkerGlobalScope, like:
+  //   * WindowOrWorkerGlobalScope.caches.keys()
+  //   * WindowOrWorkerGlobalScope.indexedDB.databases()
+  // Note: This cannot use `screen`, per the existing window.screen property.
+  const screensV1 = await self.screens.get();
 
-  // 2: 'getScreens()' directly from `Navigator`/`WorkerNavigator`, like:
-  //   * `Navigator.getVRDisplays()`
-  // Note: This inhibits encapsulation of related screen event APIs later.
+  // 2: getScreens() directly on Navigator and WorkerNavigator, like:
+  //   * Navigator.getVRDisplays()
   const screensV2 = await navigator.getScreens();
 
-  // 3: 'getScreens()' directly from `WindowOrWorkerGlobalScope`.
-  // Note: This inhibits encapsulation of related screen event APIs later.
-  const screensV3 = await self.getScreens();
+  // 3: Screens namespace with get() on Navigator and WorkerNavigator, like:
+  //   * Navigator.bluetooth.requestDevice()
+  const screensV3 = await navigator.screens.get();
 
   // Alternative names:
   foo.getDisplays();
