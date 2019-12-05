@@ -50,8 +50,9 @@ is also critical for some of the use cases explored in this document.
 
 The leading option proposed here is to introduce a `getScreens()` method, which
 resolves to an array of [`Screen`][1] objects on success, and rejects otherwise.
-The method could be implemented on the `WindowOrWorkerGlobalScope` mixin, making
-screen info available in both `Window` and `Worker` execution contexts.
+The method could be implemented on the `Window` interface, making multi-screen
+info accessible to execution contexts using the existing single-screen
+`Window.screen` attribute.
 
 Additionally, this proposal would introduce new properties to the [`Screen`][1]
 interface, providing information to help optimize content presentation.
@@ -59,7 +60,7 @@ interface, providing information to help optimize content presentation.
 ```js
 async () => {
   // NEW: Returns an Array of Screen objects connected to the device on success.
-  const screens = await getScreens();
+  const screens = await window.getScreens();
 
   for (const screen of screens) {
     // Properties specified in https://www.w3.org/TR/cssom-view/#screen
@@ -84,7 +85,7 @@ async () => {
     console.log(screen.scaleFactor);   // 2
     console.log(screen.internal);      // false
     console.log(screen.primary);       // false (discernable from top/left)
-    console.log(screen.name);          // "DELL P2715Q" or "Display 1"
+    console.log(screen.name);          // "Screen 1" or "DELL P2715Q"
     console.log(screen.touchSupport);  // false
   }
 }
@@ -153,18 +154,23 @@ taken to be in the same coordinate space, relative to the primary display.
 It may be beneficial to actually standardize this pattern, or to provide some
 non-normative notes encouraging implementers to follow this common convention.
 
-### Scope: `WindowOrWorkerGlobalScope` or `Navigator`/`WorkerNavigator`
+### Scope: `Window`, `WindowOrWorkerGlobalScope`, `Navigator`/`WorkerNavigator`
 
-Taking inspiration from existing Web APIs, there are a couple of places where
-the proposed API could reasonably live.
+Taking inspiration from existing Web APIs, there are a few places where the
+proposed API could reasonably live.
 
-1. The `WindowOrWorkerGlobalScope` mixin, implemented by `Window` and
-`WorkerGlobalScope` interfaces, could be an intuitive host this API. Those
+1. In the `Window` interface, making multi-screen info accessible to execution
+contexts using the existing single-screen `window.screen` attribute. Those
 familiar with `window.screen` might anticipate a similar access pattern for
-information about multi-screen environments, and access from service workers may
-be valuable for the [Window Placement API proposal][3]. It should be noted that
-`Window` already hosts many attributes, functions and interfaces, so care should
-be taken not to overburden this surface.
+information about multi-screen environments. It should be noted that `Window`
+already hosts many attributes, functions and interfaces, so care should be taken
+not to overburden this surface.
+
+2. The `WindowOrWorkerGlobalScope` mixin, implemented by `Window` and
+`WorkerGlobalScope` interfaces, could also be an intuitive host this API. This
+offers access to both `Window` and `Worker` execution contexts, extending the
+suggestion above with additional access for service workers, which may be
+valuable for certain aspects of the the [Window Placement API proposal][3].
 
 2. The [`Navigator`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
 object nested beneath the global scope may be a good potential location for this
@@ -178,55 +184,57 @@ would also need to implement the API.
 The [`Screen`][1] interface supplies a fairly comprehensive set of display
 properties, but there are use cases for additional properties, considered below.
 
-Properties implemented by some browsers that should be standardized; see
-[MDN](https://developer.mozilla.org/en-US/docs/Web/API/Screen). These properties
-are useful for understanding the display layout relative to content bounds and
-for the [Window Placement API proposal][3].
-* **`Screen.left`**: The distance from the left side of the primary display to
-  the left side of this display.
-* **`Screen.top`**: The distance from the top of the primary display to the top
-  of this display.
-* **`Screen.availLeft`**: The distance from the left side of the primary display
-  to the left side of the region available for windows on this display.
-* **`Screen.availTop`**: The distance from the top of the primary display to the
-  top of the region available for windows on this display.
+`Screen` properties already implemented by some browsers, and which should be
+standardized; see [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Screen).
+These properties are useful for understanding the display layout relative to
+content bounds and for the [Window Placement API proposal][3].
+* `Screen.left`: The distance from the left side of the primary display to the
+  left side of this display.
+* `Screen.top`: The distance from the top of the primary display to the top of
+  this display.
+* `Screen.availLeft`: The distance from the left side of the primary display to
+  the left side of the region available for windows on this display.
+* `Screen.availTop`: The distance from the top of the primary display to the top
+  of the region available for windows on this display.
 
-New properties that may be important to prioritize.
-* **`Screen.internal`**: True if this display is internal (built-in).
-  * May be useful for showing slideshows on external displays (projector) and
-    controls/notes on internal displays (laptop screen).
-* **`Screen.primary`**: True if this display is the primary display.
-  * May be useful for determining the placement of prominent dashboard windows.
+New `Screen` properties with compelling use cases.
+* `Screen.internal`: True if this display is internal (built-in).
+  * Useful for showing slideshows on external displays (projector) and controls
+    or notes on internal displays (laptop screen).
+* `Screen.primary`: True if this display is the primary display.
+  * Useful for determining the placement of prominent dashboard windows.
   * Can be inferred from unstandardized properties already exposed; i.e.
     `Screen.left` and `Screen.top` are both zero only on the primary display.
-* **`Screen.scaleFactor`**: The ratio between physical pixels and device
-  independent pixels for this display.
-  * May be useful for customizing the appearance of content when the hosting
+* `Screen.scaleFactor`: The ratio between physical pixels and device independent
+  pixels for this display.
+  * Useful for customizing the appearance of content when the hosting
     window spans across multiple displays with different pixel ratios.
-  * TBD: How to effectively pair this with `Window.devicePixelRatio`?
-* **`Screen.name`** or **`Screen.id`**: A name or identifier for this display.
-  * May be useful for prompting/notifying users about window placement actions.
-  * May be useful for persisting window placements for certain displays.
-  * The user agent could supply basic names, like "Display 1" in place of more
-    sensitive device-specific names, reducing the fingerprintable surface.
-* **`Screen.touchSupport`**: True if the display supports touch input.
-  * May be useful for presenting touch-specific UI layouts.
+  * TBD: How to effectively pair this with `window.devicePixelRatio`?
+* `Screen.name` or `Screen.id`: A name or identifier for this display.
+  * The user agent could supply basic names, like "Screen 1" instead of more
+    sensitive device-specific names, to reduce the fingerprintable surface.
+  * Useful for prompting/notifying users about window placement actions.
+  * Useful for persisting window placements for certain displays.
+* `Screen.touchSupport`: True if the display supports touch input.
+  * Useful for showing controls on the touch-enabled display in a meeting room.
 
-New properties that may be worth considering.
-* **`Screen.accelerometer`**: True if the display has an accelerometer.
+New `Screen` properties to consider as use cases arise.
+* `Screen.accelerometer`: True if the display has an accelerometer.
   * May be useful for showing immersive controls (e.g. game steering wheel).
-* **`Screen.dpi`**: The display density as the number of pixels per inch.
+* `Screen.dpi`: The display density as the number of pixels per inch.
   * May be useful for presenting content with tailored physical scale factors.
-* **`Screen.subpixelOrder`**: The order/orientation of this display's subpixels.
+* `Screen.subpixelOrder`: The order/orientation of this display's subpixels.
   * May be useful for adapting content presentation for some display technology.
-* **`Screen.interlaced`**: True if the display's mode is interlaced.
+* `Screen.interlaced`: True if the display's mode is interlaced.
   * May be useful for adapting content presentation for some display technology.
-* **`Screen.refreshRate`**: The display's refresh rate in hertz.
+* `Screen.refreshRate`: The display's refresh rate in hertz.
   * May be useful for adapting content presentation for some display technology.
-* **`Screen.overscan`**: The display's insets within its screen's bounds.
+* `Screen.overscan`: The display's insets within its screen's bounds.
   * May be useful for adapting content presentation for some display technology.
-* **`Screen.hidden`**: True if the display is not visible (e.g. closed laptop).
+* `Screen.hidden`: True if the display is not visible (e.g. closed laptop).
   * May be useful for recognizing when displays may be active but not visible.
+* `Screen.mirrored`: True if the display is mirrored to another display.
+  * May be useful for recognizing when a laptop is mirrored to a projector, etc.
 
 ### Changes to `colorDepth` and `pixelDepth`
 
@@ -276,13 +284,13 @@ async () => {
 ### Alternative synchronous access pattern
 
 The leading proposal is an asynchronous interface. Alternatively, a synchronous
-API would match the existing `Window.screen` API, but may require implementers
+API would match the existing `window.screen` API, but may require implementers
 to cache system information that would not otherwise be required. It would also
 prevent access control using a permission model, or require implementers to stop
 script execution while the permission model is queried or the user is prompted.
 
 ```js
-  // Add a property on `WindowOrWorkerGlobalScope`, like `Window.screen`
+  // Add a property on `WindowOrWorkerGlobalScope`, like `window.screen`
   const screensV5 = self.screens;
 ```
 
