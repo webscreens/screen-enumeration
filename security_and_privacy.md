@@ -182,7 +182,7 @@ to access the display list, and the API is only available on secure contexts.
 ## 2.11 Does this specification allow an origin some measure of control over a user agent’s native UI?
 
 On its own, it does not. In conjunction with the proposed
-[Window Placement API](https://github.com/spark008/window-placement/blob/master/EXPLAINER.md),
+[Window Placement API](https://github.com/webscreens/window-placement/blob/master/EXPLAINER.md),
 this API could enable use cases where a window is opened in fullscreen mode on a
 display that does not contain a window accessible to that origin at the time.
 
