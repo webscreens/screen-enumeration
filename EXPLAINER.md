@@ -250,8 +250,8 @@ for selecting the optimal display to present medical and creative content.
 
 ### Alternative names and scopes for getScreens()
 
-Besides the leading proposal for `WindowOrWorkerGlobalScope` to implement a new
-`getScreens()` method, some alternative names and locations are listed below.
+Besides the leading proposal to implement a new `window.getScreens()` method,
+some alternative names and locations are listed below.
 
 A `Screens` Web IDL namespace could provide a shared location for `getScreens()`
 and related functionality that may be added in the future, but at this time,
@@ -260,7 +260,7 @@ namespace would be preferable to a non-constructable class or interface.
 
 ```js
 async () => {
-  // 1: Screens namespace with get() on WindowOrWorkerGlobalScope, like:
+  // 1: Screens namespace with get() on Window/WindowOrWorkerGlobalScope, like:
   //   * WindowOrWorkerGlobalScope.caches.keys()
   //   * WindowOrWorkerGlobalScope.indexedDB.databases()
   // Note: This cannot use `screen`, per the existing window.screen property.
@@ -290,8 +290,8 @@ prevent access control using a permission model, or require implementers to stop
 script execution while the permission model is queried or the user is prompted.
 
 ```js
-  // Add a property on `WindowOrWorkerGlobalScope`, like `window.screen`
-  const screensV5 = self.screens;
+// Window or WindowOrWorkerGlobalScope attribute, like `window.screen`
+const screensV5 = self.screens;
 ```
 
 ### Alternative property access or a new `Display` container class
@@ -309,16 +309,16 @@ on the `Screen` or `ScreenManager` interfaces, or resolve to undefined if access
 has not been granted:
 
 ```js
-  // 1: Add an asynchronous method on `Screen`:
-  const value = window.screen.getNewProperty();
+// 1: Add an asynchronous method on `Screen`:
+const value = window.screen.getNewProperty();
 
-  // 2: Add an asynchronous method on `ScreenManager`:
-  const value = navigator.screen.getNewPropertyForScreen(window.screen);
+// 2: Add an asynchronous method on `ScreenManager`:
+const value = navigator.screen.getNewPropertyForScreen(window.screen);
 
-  // 3: Properties are undefined before access is granted.
-  console.log(screen.newProperty);  // Resolves to `undefined`.
-  navigator.screen.getScreens();    // Requests access, which is granted.
-  console.log(screen.newProperty);  // Resolves to the actual value.
+// 3: Properties are undefined before access is granted.
+console.log(screen.newProperty);  // Resolves to `undefined`.
+navigator.screen.getScreens();    // Requests access, which is granted.
+console.log(screen.newProperty);  // Resolves to the actual value.
 ```
 
 Yet another alternative is introducing a new `Display` interface as a container
@@ -357,7 +357,7 @@ without re-selecting displays.
 ## Privacy & Security
 
 For an in-depth discussion on specific privacy and security concerns, see the
-[responses to the W3C Security and Privacy Self-Review Questionnaire](https://github.com/spark008/screen-enumeration/blob/master/security_and_privacy.md).
+[responses to the W3C Security and Privacy Self-Review Questionnaire](https://github.com/webscreens/screen-enumeration/blob/master/security_and_privacy.md).
 
 Exposing the details of a user's multi-screen setup presents a fingerprinting
 concern. To minimize the fingerprintable space, it's prudent to limit the set of
@@ -386,6 +386,33 @@ implementers could gate the success of enumeration upon the granting of explicit
 permission through a prompt. Calling `getScreens()` for the first time could
 prompt the user to select which `Screens`, if any, to share with the site.
 
+It may also be possible to extend the proposed API with a mechanism to request
+more limited or granular multi-screen information. This may allow web developers
+and user agents to cooperatively request and provide information required for
+specific use cases, proactively reducing the fingerprintable information shared.
+For example, getScreens() could request everything by default, and take an
+optional parameter to request specific information. Partial results could be
+returned as a Screen array with only the requested values populated, with
+dictionaries, or some other approach.
+
+```js
+// Request the number of connected screens, possibly as an array of empty
+// Screen objects with default/dummy attributes values.
+var screens = await getScreens(['count']);
+if (screens.count > 1) {
+  // An empty Screen object may suffice for some proposed Window Placement uses.
+  document.body.requestFullscreen(screens[1]);
+
+  // Or, call getScreens() again to request additional information.
+  screens = await getScreens(['bounds', 'colorDepth']);
+  // Use bounds and colorDepth to determine the appropriate display.
+  document.body.requestFullscreen(
+      (screens[1].width > screens[0].width ||
+       screens[1].colorDepth > screens[0].colorDepth)
+      ? screens[1] : screens[0]);
+}
+```
+
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Screen
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/Window
-[3]: https://github.com/spark008/window-placement
+[3]: https://github.com/webscreens/window-placement
