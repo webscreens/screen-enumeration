@@ -214,7 +214,7 @@ New `Screen` properties with compelling use cases.
   * Useful for persisting window placements for certain displays.
   * Useful for prompting/notifying users about window placement actions.
   * Useful for notifying users about screen configuration changes.
-  * Perhaps simple ordinals (0, 1, 2, ...) or temporary randomly generated site-
+  * Perhaps simple ordinals (0, 1, 2...) or temporary randomly-generated origin-
     and device-specific unique ids. These should minimize the fingerprintable
     surface while offering a semi-persistent way of denoting a given display.
 * `Screen.touchSupport`: True if the display supports touch input.
