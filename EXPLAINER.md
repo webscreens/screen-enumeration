@@ -84,8 +84,8 @@ async () => {
     // NEW: Properties proposed here that should be standardized.
     console.log(screen.scaleFactor);   // 2
     console.log(screen.internal);      // false
-    console.log(screen.primary);       // false (discernable from top/left)
-    console.log(screen.name);          // "Screen 1" or "DELL P2715Q"
+    console.log(screen.primary);       // false
+    console.log(screen.id);            // 1
     console.log(screen.touchSupport);  // false
   }
 }
@@ -210,11 +210,13 @@ New `Screen` properties with compelling use cases.
   * Useful for customizing the appearance of content when the hosting
     window spans across multiple displays with different pixel ratios.
   * TBD: How to effectively pair this with `window.devicePixelRatio`?
-* `Screen.name` or `Screen.id`: A name or identifier for this display.
-  * The user agent could supply basic names, like "Screen 1" instead of more
-    sensitive device-specific names, to reduce the fingerprintable surface.
-  * Useful for prompting/notifying users about window placement actions.
+* `Screen.id`: An identifier for this display.
   * Useful for persisting window placements for certain displays.
+  * Useful for prompting/notifying users about window placement actions.
+  * Useful for notifying users about screen configuration changes.
+  * Perhaps simple ordinals (0, 1, 2, ...) or temporary randomly generated site-
+    and device-specific unique ids. These should minimize the fingerprintable
+    surface while offering a semi-persistent way of denoting a given display.
 * `Screen.touchSupport`: True if the display supports touch input.
   * Useful for showing controls on the touch-enabled display in a meeting room.
 

@@ -17,31 +17,24 @@ the presentation controls to the built-in display when the user clicks a
 "Present" button.
 
 The following are some new display properties that would help the application
-better predict the optimal content layout given the available screen space:
+better predict/persist the optimal layout for the available screen space:
 * Whether it is internal (built-in) or external
   * E.g. show speaker notes on the laptop's built-in display and show the
   presentation on the external display
-* Whether it is the primary display
+* Whether it is the primary display or a secondary display
   * E.g. show the speaker notes on the primary display and the presentation on
   a secondary display
 * Display scale factor
   * E.g. given two screens of the same size, render the presentation on the
   screen with the larger scale factor
+* An identifier for the screen
+  * E.g. persist the user's preference to show slides on the screen with id 2
+* Whether the screen supports touch input
+  * E.g. put presenter controls on the display with touch support
 
-Another proposed new screen property is the display name string. This info would
-allow sites to present custom display selection UIs or show a descriptive
-preview of a button's action, like "Present to 'Display1'". These recognizable
-names would be useful for users to understand options or actions regarding the
-presentation of content in a multi-screen environment.
+Other properties are considered in the explainer, but these have more limited
+potential value and are not being actively pursued.
 
-There are other properties considered in the explainer, each offering potential
-value, but they might not be as widely applicable, and it may be more important
-to limit the set of exposed properties.
-
-* An identifier; useful for persisting window placements by display. The user
-  agent could map sensitive EDIDs to indices
-* Whether the display supports touch interaction; useful for presenting
-  touch-specific UI layouts
 * Whether the display supports accelerometer info: useful for showing immersive
   controls (e.g. game steering wheel)
 * The dpi of the display (pixels per inch): useful for presenting content with
@@ -53,7 +46,9 @@ to limit the set of exposed properties.
   * The display's refresh rate in hertz
   * The display's overscan insets within its screen's bounds.
 * Whether the display is not visible (e.g. closed laptop): useful for
-  recognizing when displays may be active but not visible.
+  recognizing when displays may be active but not visible
+* Whether the screen is mirroring content from another screen: useful for
+  recognizing when a laptop is mirrored to a projector
 
 ## 2.2 Is this specification exposing the minimum amount of information necessary to power the feature?
 
@@ -143,20 +138,21 @@ The following display properties are not currently Web-exposed, but are
 available in the Chrome Apps API via the
 [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo),
 given the `"system.display"` permission:
+* primary or secondary
+* internal (built-in) or external
 * name
-* whether the display is the primary display
-* whether the display is internal (built-in) or external
+* identifier
+* touch support
+* dpi
+* refresh rate
+* interlaced
+* overscan insets
+* mirrored
 
 The following display properties are not currently Web-exposed:
-* An identifier
-* Whether the display supports touch interaction
-* Whether the display supports accelerometer info
-* The dpi of the display (pixels per inch)
-* The display's subpixel order
-* Whether the display's mode is interlaced
-* The display's refresh rate in hertz
-* The display's overscan insets within its screen's bounds
-* Whether the display is not visible (e.g. closed laptop)
+* accelerometer support
+* subpixel order
+* visible (e.g. open vs closed laptop)
 
 See Section 2.1 for more information about each of the proposed properties.
 
