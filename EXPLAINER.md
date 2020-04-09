@@ -210,13 +210,11 @@ New `Screen` properties with compelling use cases.
   * Useful for customizing the appearance of content when the hosting
     window spans across multiple displays with different pixel ratios.
   * TBD: How to effectively pair this with `window.devicePixelRatio`?
-* `Screen.id`: An identifier for this display.
+* `Screen.id`: A temporary, generated per-origin unique ID; resets when cookies
+    are deleted.
   * Useful for persisting window placements for certain displays.
   * Useful for prompting/notifying users about window placement actions.
   * Useful for notifying users about screen configuration changes.
-  * Perhaps simple ordinals (0, 1, 2...) or temporary randomly-generated origin-
-    and device-specific unique ids. These should minimize the fingerprintable
-    surface while offering a semi-persistent way of denoting a given display.
 * `Screen.touchSupport`: True if the display supports touch input.
   * Useful for showing controls on the touch-enabled display in a meeting room.
 
