@@ -16,8 +16,15 @@ the largest external display, the speaker notes to the next largest display, and
 the presentation controls to the built-in display when the user clicks a
 "Present" button.
 
-The following are some new display properties that would help the application
-better predict/persist the optimal layout for the available screen space:
+These properties are implemented by some browsers and should be standardized to
+convey the relative placement of screens and their available work areas:
+* The left screen coordinate
+* The top screen coordinate
+* The left available coordinate
+* The top available coordinate
+
+These new display properties would help web applications predict and persist the
+optimal layout for content in the available screen space:
 * Whether it is internal (built-in) or external
   * E.g. show speaker notes on the laptop's built-in display and show the
   presentation on the external display
@@ -32,9 +39,7 @@ better predict/persist the optimal layout for the available screen space:
 * Whether the screen supports touch input
   * E.g. put presenter controls on the display with touch support
 
-Other properties are considered in the explainer, but these have more limited
-potential value and are not being actively pursued.
-
+These properties warrant consideration, but are not in the current proposal:
 * Whether the display supports accelerometer info: useful for showing immersive
   controls (e.g. game steering wheel)
 * The dpi of the display (pixels per inch): useful for presenting content with
@@ -52,11 +57,18 @@ potential value and are not being actively pursued.
 
 ## 2.2 Is this specification exposing the minimum amount of information necessary to power the feature?
 
-Each of the new display properties chosen for this API makes a non-replaceable
-contribution. Removal or constraining of any property may degrade the user
-experience. Some properties offer more value than others, and some are more
-relevant to the proposed use cases than others. Care should be taken to choose
-those properties offering the most value to the most important use cases.
+This specification exposes information for each connected screen, comparable to
+what is already exposed by the existing Screen object (for the one screen
+hosting an associated content window, or some critical portion of that window).
+
+This specification also exposes new information about each screen, reflecting
+display properties that help web applications choose the appropriate screen
+for a given task. The properties have been prioritized and selected for their
+potential value to the most common and critical use cases.
+
+The [Privacy & Security](https://github.com/webscreens/screen-enumeration/blob/master/EXPLAINER.md#privacy--security)
+section of the explainer briefly mentions the possibility of requesting limited
+or granular screen information, and this tactic should be explored further.
 
 It has been suggested that user agents themselves could provide a UI for
 selecting where content is presented, but this is cumbersome for users and
@@ -65,8 +77,9 @@ value over the existing cumbersome manual placement of windows by users.
 
 ## 2.3 How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
-This API does not expose such information. Any exposed information may identify
-the machine, but not its user.
+This API exposes some new information about the device's display configuration.
+Since that information could be used to help identify a device, access can be
+gated on user permission.
 
 ## 2.4 How does this specification deal with sensitive information?
 
@@ -78,83 +91,74 @@ The user agent could persist screen permission grants.
 
 ## 2.6 What information from the underlying platform, e.g. configuration data, is exposed by this specification to an origin?
 
-This API proposes exposing some additional properties for each of the displays
-connected to the device; see Section 2.1 for a complete list.
+This API proposes exposing about 9-17 new properties for each connected display,
+most of which directly correlate with underyling platform configuration data.
+See Section 2.1 for a list of new properties considered by this proposal.
 
 ## 2.7 Does this specification allow an origin access to sensors on a user’s device?
 
-No.
+No. If anything, this API may expose the presence of touch or accelerometer
+sensors associated with each display, but not access to sensor data itself.
 
 ## 2.8 What data does this specification expose to an origin? Please also document what data is identical to data exposed by other features, in the same or different contexts.
 
-The screen properties in this API proposal that already exist through other Web
-APIs are currently exposed:
-* synchronously
-* in only the document/frame execution context
-* for the display containing the window
+The API exposes a set of [`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen)
+objects, one for each connected display, beyond the single Screen object
+currently available to each content window. The same set of Screen objects is
+already exposed to an origin, if windows for that origin are placed on each of
+the connected screens, via aggregating the respective |window.screen| objects.
 
-This API proposes exposing these existing properties *and new ones*:
-* asynchronously
-* in both the document/frame and worker execution contexts
-* for all displays, not just the one containing the window
+This API currently proposes exposing these new properties on each Screen object:
+* The left screen coordinate
+  * Not standardized, but already exposed by some browsers via
+    [`Screen.left`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/left)
+* The top screen coordinate
+  * Not standardized, but already exposed by some browsers via
+    [`Screen.top`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/top)
+* The left available coordinate
+  * Not standardized, but already exposed by some browsers via
+    [`Screen.availLeft`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availLeft)
+* The top available coordinate
+  * Not standardized, but already exposed by some browsers via
+    [`Screen.availTop`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availTop)
+* Whether it is internal (built-in) or external
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo),
+* Whether it is the primary display or a secondary display
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* Display scale factor
+  * Not standardized, but already exposed by some browsers via
+    [`Window.devicePixelRatio`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio)
+* An identifier for the screen
+  * Not web-exposed, but a more persistent id is available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* Whether the screen supports touch input
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
 
-### Existing properties
-
-The following display properties are currently exposed synchronously only in the
-document/frame execution context via the
-[`Screen`](https://developer.mozilla.org/en-US/docs/Web/API/Screen) interface:
-* color depth, i.e.
-[`Screen.colorDepth`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/colorDepth)
-* width and height of the entire display, i.e.
-[`Screen.width`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/width),
-[`Screen.height`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/height)
-* width and height of user window area (excluding system UI areas), i.e.
-[`Screen.availWidth`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availWidth),
-[`Screen.availHeight`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availHeight)
-* orientation (landscape vs. portrait and rotation in degrees), i.e.
-[`Screen.orientation`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/orientation)
-
-The following unstandardized properties of the `Screen` interface, exposed
-synchronously in the document/frame execution context for some browsers:
-* the display's origin, or placement relative to the primary display, i.e.
-  [`Screen.left`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/left),
-  [`Screen.top`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/top)
-* left and top of user window area (excluding system UI areas), i.e.
-  [`Screen.availLeft`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availLeft),
-  [`Screen.availTop`](https://developer.mozilla.org/en-US/docs/Web/API/Screen/availTop)
-
-The following properties are exposed synchronously in the document/frame
-execution context via the
-[`Window`](https://developer.mozilla.org/en-US/docs/Web/API/Window) interface:
-* x-,y-coordinates of the window (relative to entire screen space), i.e.
-[`Window.screenLeft`](https://developer.mozilla.org/en-US/docs/Web/API/Window/screenLeft),
-[`Window.screenTop`](https://developer.mozilla.org/en-US/docs/Web/API/Window/screenTop)
-* scaling factor (unstandardized), i.e.
-[`Window.devicePixelRatio`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio)
-
-### New properties
-
-The following display properties are not currently Web-exposed, but are
-available in the Chrome Apps API via the
-[`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo),
-given the `"system.display"` permission:
-* primary or secondary
-* internal (built-in) or external
-* name
-* identifier
-* touch support
-* dpi
-* refresh rate
-* interlaced
-* overscan insets
-* mirrored
-
-The following display properties are not currently Web-exposed:
-* accelerometer support
-* subpixel order
-* visible (e.g. open vs closed laptop)
-
-See Section 2.1 for more information about each of the proposed properties.
+This API considers additional new properties, that are not actively proposed:
+* Whether the display supports accelerometer info
+  * Not web-exposed
+* The dpi of the display (pixels per inch)
+  * Not standardized, but similar to data already exposed by some browsers via
+    [`Window.devicePixelRatio`](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio)
+* The display's subpixel order
+  * Not web-exposed
+* Whether the display's mode is interlaced
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* The display's refresh rate in hertz
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* The display's overscan insets within its screen's bounds.
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* Whether the screen is mirroring content from another screen
+  * Not web-exposed, but available via the Chrome Apps
+    [`system.display` API](https://developer.chrome.com/apps/system_display#method-getInfo)
+* Whether the display is not visible (e.g. closed laptop)
+  * Not web-exposed
 
 ## 2.9 Does this specification enable new script execution/loading mechanisms?
 

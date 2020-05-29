@@ -23,13 +23,12 @@ is also critical for some of the use cases explored in this document.
 
 ## Use cases
 
-* **Slide show presentation with a laptop screen and a projector**
-  * Present slides on the projector, open speaker notes/controls on the laptop
-* **Finance applications with multiple windows spread over multiple displays**
-  * Launch a dashboard that opens a set of windows across multiple displays
-  * User interacts with dashboard controls to move windows between displays
-* **Windows spanning multiple displays with different hardware properties**
-  * Optimize content for the display hardware where it is rendered
+Examples of applications using multiple windows spread over multiple screens:
+* Present slides on a projector, open speaker notes on the laptop's screen
+* Launch and manage a dashboard of financial windows across multiple monitors
+* Open windows to view medical images (eg. x-rays) on the appropriate screens
+* Creativity apps showing pallete/preview windows on multiple screens
+* Optimize content when a window spans multiple screens with varying properties
 
 ## Goals
 
@@ -41,7 +40,8 @@ is also critical for some of the use cases explored in this document.
 
 ### Non-goals
 
-* Expose an exhaustive set of display properties known to the OS
+* Expose an extraneous or especially identifying information (eg. display EDID)
+* Expose APIs to control the configuration of display devices.
 * Enumerate remote displays connected to other devices
   * See the [Presentation](https://www.w3.org/TR/presentation-api/) and
     [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs
@@ -97,9 +97,9 @@ set of screens or their properties change. The event would be available on the
 
 ```js
 self.addEventListener('screenchange', function(event) {
-  var highDPIScreen = getScreenWithHighestDPI(event.screens);
-  if (window.screen != highDPIScreen)
-    informUserOfAvailableScreen(highDPIScreen);
+  var biggestScreen = getBiggestScreen(event.screens);
+  if (window.screen != biggestScreen)
+    informUserOfAvailableScreen(biggestScreen);
 });
 ```
 
