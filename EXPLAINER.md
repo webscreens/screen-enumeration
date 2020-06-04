@@ -23,12 +23,16 @@ is also critical for some of the use cases explored in this document.
 
 ## Use cases
 
-Examples of applications using multiple windows spread over multiple screens:
+This API exposes information useful to applications that wish to use multiple
+screens to show windows:
 * Present slides on a projector, open speaker notes on the laptop's screen
 * Launch and manage a dashboard of financial windows across multiple monitors
 * Open windows to view medical images (eg. x-rays) on the appropriate screens
 * Creativity apps showing pallete/preview windows on multiple screens
 * Optimize content when a window spans multiple screens with varying properties
+
+See the [Window Placement API][3] for proposed functionality that would make use
+of information exposed by this API.
 
 ## Goals
 
@@ -397,7 +401,8 @@ dictionaries, or some other approach.
 
 ```js
 // Request the number of connected screens, possibly as an array of empty
-// Screen objects with default/dummy attributes values.
+// Screen objects with default/dummy attributes values, or perhaps as a named
+// member of a returned dictionary, eg: { count: 2 }.
 var screens = await getScreens(['count']);
 if (screens.count > 1) {
   // An empty Screen object may suffice for some proposed Window Placement uses.
