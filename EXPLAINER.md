@@ -95,8 +95,8 @@ async () => {
 }
 ```
 
-This proposal also aims to introduce a `screenschange` event to be fired when
-the set of screens or their properties change. The event would be available on the
+This proposal also aims to introduce a `screenschange` event, fired when the set
+of screens or their properties change. The event would be available on the
 `Window` and `WorkerGlobalScope` objects, which both implement `EventTarget`.
 
 ```js
