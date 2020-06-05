@@ -95,12 +95,12 @@ async () => {
 }
 ```
 
-This proposal also aims to introduce a `screenchange` event to be fired when the
-set of screens or their properties change. The event would be available on the
+This proposal also aims to introduce a `screenschange` event to be fired when
+the set of screens or their properties change. The event would be available on the
 `Window` and `WorkerGlobalScope` objects, which both implement `EventTarget`.
 
 ```js
-self.addEventListener('screenchange', function(event) {
+self.addEventListener('screenschange', function(event) {
   var biggestScreen = getBiggestScreen(event.screens);
   if (window.screen != biggestScreen)
     informUserOfAvailableScreen(biggestScreen);
