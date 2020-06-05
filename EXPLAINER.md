@@ -250,6 +250,106 @@ provides a more useful specification for these values. There is a clear signal
 from developers that these values are meaningful and accurate, which is useful
 for selecting the optimal display to present medical and creative content.
 
+### Handling blocked permissions
+
+It could be reasonable for getScreens() to handle a blocked permission or
+similar failure modes in one of several ways:
+* Reject the promise and throw an exception
+* Fulfill the promise with an empty array or dictionary
+* Fulfill the promise with an array only containing the existing window.screen
+
+### Requests for limited information
+
+It may be beneficial to extend the proposed API with a mechanism to request
+more limited or granular multi-screen information. This may allow web developers
+and user agents to cooperatively request and provide information required for
+specific use cases, proactively reducing the fingerprintable information shared,
+and potentially allowing user agents to expose more limited information without
+explicit user permission prompts (eg. a single multi-screen boolean flag).
+
+On possible approach is that getScreens() could request everything by default,
+and take an optional parameter to request limited information. Partial results
+could be returned as a Screen array with only the requested values populated, or
+with dictionaries of named values including the screen array.
+
+```js
+// Request a single bit answering the question: are multiple screens available?
+// This informs the value of additional information requests (and user prompts).
+var screen_info = await getScreens(['multiScreen']);
+if (!screen_info.multiScreen)
+  return;
+// Request the number of connected screens, either returning an array of 'empty'
+// Screen objects with undefined property values, or as a named member of a
+// returned dictionary, eg: { multi-screen: true, count: 2, ... }.
+screen_info = await getScreens(['count']);
+if (screen_info.count <= 1)  // OR: |if (screen_info.length <= 1)|
+  return;
+
+// An empty Screen object may suffice for some proposed Window Placement uses.
+document.body.requestFullscreen(screens[1]);
+
+// OR: call getScreens() again to request additional information, with only the
+// requested information available via corresponding `Screen` attributes.
+screen_info = await getScreens(['bounds', 'colorDepth']);
+// Use bounds and colorDepth to determine the appropriate display.
+document.body.requestFullscreen(
+    (screen_info[1].width > screen_info[0].width ||
+      screen_info[1].colorDepth > screen_info[0].colorDepth)
+    ? screen_info[1] : screen_info[0]);
+}
+```
+
+### Compatibility with the existing window.screen object
+
+This proposal aims to provide a high degree of compatibility between objects
+returned by the getScreens() API and the existing synchronously-accessed
+`window.screen` object. Ideally, sites should be able to compare Screens objects
+without concern for their origin, enabling a very basic and useful check like:
+
+```js
+// Find a Screen from getScreens that is not the current screen.
+var otherScreen = (await getScreens()).find((s)=>{return s != window.screen;});
+```
+
+There are some options around exposing new properties for each access pattern:
+* New properties are only exposed on getScreens() objects
+  * window.screen yields undefined values for new properties
+  * Comparison may just regard underlying devices, not property values
+* New properties are exposed on getScreens() objects and window.screen
+  * This requires synchronous access to the new properties on window.screen
+  * How to support permission requirements of synchronously exposing new info
+
+The existing Screen (via window.screen) is a live object. A cached Screen object
+(eg. var myScreen = window.screen) returns updated values after screen changes,
+and even updates when the window is moved across displays.
+
+This proposal aims to return a static array of static objects and an event when
+any screen information changes. This seems easy for developers to reason about,
+easy for browsers to implement, and follows some general advice in the
+[Web Platform Design Principles](https://w3ctag.github.io/design-principles/#live-vs-static).
+
+Alternative approaches include returning dynamic collections of live objects
+(eg. collection length changes when screens connect/disconnect, and properties
+of each Screen in the collection change with device configuration changes), or
+static collections of live objects (eg. indivual Screen properties change, but
+the overall collection does not change reflect newly connected screens). There
+are tradeoffs to each approach, but these seem generally less desirable.
+
+The difference of static screen information snapshots from getScreens() and the
+live Screen object from window.screen yields some compatibility questions:
+* How static getScreens() objects handle the methods and event handler of
+  [screen.orientation](https://developer.mozilla.org/en-US/docs/Web/API/ScreenOrientation)
+  * Leave these inoperative; callers must access window.screen
+  * Support these APIs for cross-screen handlers, locks, etc.
+* Should ScreenOrientation have another access method?
+* Should window.screen ultimately be a static snapshot, instad of a live object?
+
+Some of these topics are explored further in these open issues:
+* Should the API return static or live objects?
+  ([#12](https://github.com/webscreens/screen-enumeration/issues/12))
+* Should the lifetime of a Screen object be limited?
+  ([#8](https://github.com/webscreens/screen-enumeration/issues/8))
+
 ## Alternative proposals
 
 ### Alternative names and scopes for getScreens()
@@ -295,7 +395,7 @@ script execution while the permission model is queried or the user is prompted.
 
 ```js
 // Window or WindowOrWorkerGlobalScope attribute, like `window.screen`
-const screensV5 = self.screens;
+const avialableScreens = self.screens;
 ```
 
 ### Alternative property access or a new `Display` container class
@@ -332,7 +432,7 @@ would only be exposed asynchronously, after potentially checking for permission.
 This may cause some confusion or difficulty correlating the existing `Screen`
 object with a new given `Display` object.
 
-### Using `Screen` to represent the entire screen space.
+### Alternatively using `Screen` to represent the entire screen space.
 
 Representing the entire combined screen space with the existing `Screen`
 interface is inadvisable, as it would come with many complications, for example:
@@ -388,35 +488,8 @@ could limit the API to secure contexts. To ensure that the user is aware of the
 data they are sharing and has control over which displays a site can access,
 implementers could gate the success of enumeration upon the granting of explicit
 permission through a prompt. Calling `getScreens()` for the first time could
-prompt the user to select which `Screens`, if any, to share with the site.
-
-It may also be possible to extend the proposed API with a mechanism to request
-more limited or granular multi-screen information. This may allow web developers
-and user agents to cooperatively request and provide information required for
-specific use cases, proactively reducing the fingerprintable information shared.
-For example, getScreens() could request everything by default, and take an
-optional parameter to request specific information. Partial results could be
-returned as a Screen array with only the requested values populated, with
-dictionaries, or some other approach.
-
-```js
-// Request the number of connected screens, possibly as an array of empty
-// Screen objects with default/dummy attributes values, or perhaps as a named
-// member of a returned dictionary, eg: { count: 2 }.
-var screens = await getScreens(['count']);
-if (screens.count > 1) {
-  // An empty Screen object may suffice for some proposed Window Placement uses.
-  document.body.requestFullscreen(screens[1]);
-
-  // Or, call getScreens() again to request additional information.
-  screens = await getScreens(['bounds', 'colorDepth']);
-  // Use bounds and colorDepth to determine the appropriate display.
-  document.body.requestFullscreen(
-      (screens[1].width > screens[0].width ||
-       screens[1].colorDepth > screens[0].colorDepth)
-      ? screens[1] : screens[0]);
-}
-```
+prompt the user to select whether to fully block or allow the request, or even
+which specific `Screens` and other information, to share with the site.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Screen
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/Window
