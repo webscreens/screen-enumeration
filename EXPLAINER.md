@@ -247,8 +247,9 @@ states that `Screen.colorDepth` and `Screen.pixelDepth` "must return 24" and
 even explains that these "attributes are useless", but the latest
 [Editor’s Draft](https://drafts.csswg.org/cssom-view/#dom-screen-colordepth)
 provides a more useful specification for these values. There is a clear signal
-from developers that these values are meaningful and accurate, which is useful
-for selecting the optimal display to present medical and creative content.
+from developers that having meaningful and accurate accurate values for these
+properties is useful for selecting the optimal display to present medical and
+creative content.
 
 ### Handling blocked permissions
 
