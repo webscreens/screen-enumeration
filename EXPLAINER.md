@@ -101,7 +101,7 @@ of screens or their properties change. The event would be available on the
 
 ```js
 self.addEventListener('screenschange', function(event) {
-  var biggestScreen = getBiggestScreen(event.screens);
+  const biggestScreen = getBiggestScreen(event.screens);
   if (window.screen != biggestScreen)
     informUserOfAvailableScreen(biggestScreen);
 });
@@ -275,7 +275,7 @@ with dictionaries of named values including the screen array.
 ```js
 // Request a single bit answering the question: are multiple screens available?
 // This informs the value of additional information requests (and user prompts).
-var screen_info = await getScreens(['multiScreen']);
+let screen_info = await getScreens(['multiScreen']);
 if (!screen_info.multiScreen)
   return;
 // Request the number of connected screens, either returning an array of 'empty'
@@ -308,7 +308,7 @@ without concern for their origin, enabling a very basic and useful check like:
 
 ```js
 // Find a Screen from getScreens that is not the current screen.
-var otherScreen = (await getScreens()).find((s)=>{return s != window.screen;});
+const otherScreen = (await getScreens()).find((s)=>{return s != window.screen;});
 ```
 
 There are some options around exposing new properties for each access pattern:
@@ -320,7 +320,7 @@ There are some options around exposing new properties for each access pattern:
   * How to support permission requirements of synchronously exposing new info
 
 The existing Screen (via window.screen) is a live object. A cached Screen object
-(eg. var myScreen = window.screen) returns updated values after screen changes,
+(eg. `const myScreen = window.screen`) returns updated values after screen changes,
 and even updates when the window is moved across displays.
 
 This proposal aims to return a static array of static objects and an event when
