@@ -141,10 +141,10 @@ in a two-dimensional plane, relative to the primary display.
 
 Although it is not standardized, the [`Screen`][1] interface already follows
 this same pattern for multi-screen environments in practice. The unstandardized
-properties `Top`, `Left`, `availTop`, and `availLeft` match the system's virtual
+properties `top`, `left`, `availTop`, and `availLeft` match the system's virtual
 arrangement of separate physical displays in practice. So, the `Screen` object
-for the primary display has `Top` and/or `Left` values of zero, while `Screen`
-objects for secondary displays have non-zero `Top` and/or `Left` values,
+for the primary display has `top` and/or `left` values of zero, while `Screen`
+objects for secondary displays have non-zero `top` and/or `left` values,
 denoting their placement relative to the primary display.
 
 Unstandardized aspects of the [`Window`][2] interface follow the same pattern.
