@@ -268,7 +268,7 @@ specific use cases, proactively reducing the fingerprintable information shared,
 and potentially allowing user agents to expose more limited information without
 explicit user permission prompts (eg. a single multi-screen boolean flag).
 
-On possible approach is that getScreens() could request everything by default,
+One possible approach is that getScreens() could request everything by default,
 and take an optional parameter to request limited information. Partial results
 could be returned as a Screen array with only the requested values populated, or
 with dictionaries of named values including the screen array.
