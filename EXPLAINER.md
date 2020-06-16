@@ -50,13 +50,43 @@ of information exposed by this API.
   * See the [Presentation](https://www.w3.org/TR/presentation-api/) and
     [Remote Playback](https://www.w3.org/TR/remote-playback/) APIs
 
-## Proposal
+## Proposal: Enumerate available screens
 
-The leading option proposed here is to introduce a `getScreens()` method, which
-resolves to an array of [`Screen`][1] objects on success, and rejects otherwise.
-The method could be implemented on the `Window` interface, making multi-screen
-info accessible to execution contexts using the existing single-screen
-`Window.screen` attribute.
+The centerpiece of this proposal is to introduce a `getScreens()` method, which
+resolves to an array of [`Screen`][1] objects on success, and rejects otherwise
+(eg. if permission is denied). The method could be implemented on the `Window`
+interface, making multi-screen info accessible to execution contexts using the
+existing single-screen `Window.screen` attribute.
+
+```js
+partial interface Window {
+  Promise<sequence<Screen>> getScreens();
+};
+```
+
+Information retrieved from this function would be integral for cross-screen
+[Window Placement API][3] functionality.
+
+## Proposal: A limited query for multiple screens
+
+This proposal also introduces a related method to answer a more basic question:
+"Does this device have multiple screens that might be viable for Window
+Placement?". A possible shape for this particularly valuable limited-information
+query might be a `isMultiScreen()` method, alongside `getScreens()`.
+
+```js
+partial interface Window {
+  Promise<boolean> isMultiScreen();
+};
+```
+
+This single bit could inform sites whether to advertise advanced multi-screen
+functionality in their UIs, and whether requesting additional multi-screen
+information (with a greater privacy barrier) could be useful. User Agents could
+even expose that single boolean with no privacy barrier, minimizing prompts of
+single-screen users for nonexistent multi-screen information.
+
+## Proposal: New `Screen` properties
 
 Additionally, this proposal would introduce new properties to the [`Screen`][1]
 interface, providing information to help optimize content presentation.
@@ -251,55 +281,6 @@ from developers that having meaningful and accurate accurate values for these
 properties is useful for selecting the optimal display to present medical and
 creative content.
 
-### Handling blocked permissions
-
-It could be reasonable for getScreens() to handle a blocked permission or
-similar failure modes in one of several ways:
-* Reject the promise and throw an exception
-* Fulfill the promise with an empty array or dictionary
-* Fulfill the promise with an array only containing the existing window.screen
-
-### Requests for limited information
-
-It may be beneficial to extend the proposed API with a mechanism to request
-more limited or granular multi-screen information. This may allow web developers
-and user agents to cooperatively request and provide information required for
-specific use cases, proactively reducing the fingerprintable information shared,
-and potentially allowing user agents to expose more limited information without
-explicit user permission prompts (eg. a single multi-screen boolean flag).
-
-One possible approach is that getScreens() could request everything by default,
-and take an optional parameter to request limited information. Partial results
-could be returned as a Screen array with only the requested values populated, or
-with dictionaries of named values including the screen array.
-
-```js
-// Request a single bit answering the question: are multiple screens available?
-// This informs the value of additional information requests (and user prompts).
-let screen_info = await getScreens(['multiScreen']);
-if (!screen_info.multiScreen)
-  return;
-// Request the number of connected screens, either returning an array of 'empty'
-// Screen objects with undefined property values, or as a named member of a
-// returned dictionary, eg: { multi-screen: true, count: 2, ... }.
-screen_info = await getScreens(['count']);
-if (screen_info.count <= 1)  // OR: |if (screen_info.length <= 1)|
-  return;
-
-// An empty Screen object may suffice for some proposed Window Placement uses.
-document.body.requestFullscreen(screens[1]);
-
-// OR: call getScreens() again to request additional information, with only the
-// requested information available via corresponding `Screen` attributes.
-screen_info = await getScreens(['bounds', 'colorDepth']);
-// Use bounds and colorDepth to determine the appropriate display.
-document.body.requestFullscreen(
-    (screen_info[1].width > screen_info[0].width ||
-      screen_info[1].colorDepth > screen_info[0].colorDepth)
-    ? screen_info[1] : screen_info[0]);
-}
-```
-
 ### Compatibility with the existing window.screen object
 
 This proposal aims to provide a high degree of compatibility between objects
@@ -360,8 +341,8 @@ some alternative names and locations are listed below.
 
 A `Screens` Web IDL namespace could provide a shared location for `getScreens()`
 and related functionality that may be added in the future, but at this time,
-there is no obvious additional API surface to motivate that approach. Using a
-namespace would be preferable to a non-constructable class or interface.
+there is no substantial additional API surface to motivate that approach. Using
+a namespace would be preferable to a non-constructable class or interface.
 
 ```js
 async () => {
@@ -380,9 +361,9 @@ async () => {
   const screensV3 = await navigator.screens.get();
 
   // Alternative names:
-  foo.getDisplays();
-  foo.requestScreens();
-  foo.requestDisplays();
+  foo.getScreenInfo();  // Suitable for limited info or non-Screen dictionaries?
+  foo.getDisplays();    // Suitable for non-Screen dictionaries?
+  foo.request*();       // Match some existing requestFoo() web platform APIs?
 }
 ```
 
@@ -441,6 +422,51 @@ interface is inadvisable, as it would come with many complications, for example:
   comprised of rectangles with different sizes and un-aligned positions. This
   cannot be adequately represented by the current `Screen` interface.
 * The set of connected physical displays may have different `Screen` properties.
+
+### Requests for limited information
+
+One particularly valuable example of limited information is proposed above, to
+answer the basic question "are there multiple screens?" via `isMultiScreen()`.
+
+It may be beneficial to extend the proposed API with a mechanism to request more
+limited or granular multi-screen information. This may allow web developers and
+user agents to cooperatively request and provide information required for
+specific use cases, proactively reducing the fingerprintable information shared,
+and potentially allowing user agents to expose more limited information without
+explicit user permission prompts (eg. a single multi-screen boolean flag).
+
+One possible approach is that getScreens() could request everything by default,
+and take an optional parameter to request limited information. Partial results
+could be returned as a Screen array with only the requested values populated, or
+with dictionaries of named values including the screen array.
+
+```js
+// Request a single bit answering the question: are multiple screens available?
+// This informs the value of additional information requests (and user prompts).
+let screen_info = await getScreens({multiScreen: true});
+if (!screen_info.multiScreen)
+  return;
+// Request the number of connected screens, either returning an array of 'empty'
+// Screen objects with undefined property values, or as a named member of a
+// returned dictionary, eg: { multi-screen: true, count: 2, ... }.
+screen_info = await getScreens({count: true});
+if (screen_info.count <= 1)  // OR: |if (screen_info.length <= 1)|
+  return;
+
+// An empty Screen object may suffice for some proposed Window Placement uses.
+document.body.requestFullscreen(screens[1]);
+
+// OR: call getScreens() again to request additional information, with only the
+// requested information available via corresponding `Screen` attributes.
+screen_info = await getScreens({availWidth: true, colorDepth: true});
+// Use availWidth and colorDepth to determine the appropriate display.
+// TODO: Refine this naive example with something more realistic.
+document.body.requestFullscreen(
+    (screen_info.screens[1].availWidth > screen_info.screens[0].availWidth ||
+      screen_info.screens[1].colorDepth > screen_info.screens[0].colorDepth)
+    ? screen_info.screens[1] : screen_info.screens[0]);
+}
+```
 
 ### Relation to Presentation and Remote Playback APIs
 
